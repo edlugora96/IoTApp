@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_main"
+    app:startDestination="@id/splashFragment2">
+    <fragment
+        android:id="@+id/controlViewFragment"
+        android:name="iothoth.edlugora.com.ui.ControlViewFragment"
+        android:label="fragment_control_view"
+        tools:layout="@layout/fragment_control_view">
+        <action
+            android:id="@+id/action_controlViewFragment_to_profileViewFragment"
+            app:destination="@id/profileViewFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/profileViewFragment"
+        android:name="iothoth.edlugora.com.ui.ProfileViewFragment"
+        android:label="fragment_profile_view"
+        tools:layout="@layout/fragment_profile_view">
+        <action
+            android:id="@+id/action_profileViewFragment_to_controlViewFragment"
+            app:destination="@id/controlViewFragment"
+            app:popUpTo="@id/controlViewFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/splashFragment2"
+        android:name="iothoth.edlugora.com.ui.SplashFragment"
+        android:label="SplashFragment" >
+        <action
+            android:id="@+id/action_splashFragment_to_controlViewFragment"
+            app:destination="@id/controlViewFragment"
+            app:popUpTo="@id/controlViewFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_splashFragment_to_profileViewFragment"
+            app:destination="@id/profileViewFragment"
+            app:popUpTo="@id/controlViewFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+</navigation>
