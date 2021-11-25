@@ -6,4 +6,18 @@
         <item name="android:background">?attr/dividerHorizontal</item>
         <item name="android:layout_marginTop">@dimen/base_margin</item>
     </style>
+
+    <style name="QText" parent="@style/Theme.IoThoth">
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="BtnDark" parent="Widget.AppCompat.ActionButton.Overflow">
+        <item name="android:background">@color/blue</item>
+        <item name="android:backgroundTint">@color/blue</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+    <style name="BtnLight" parent="BtnDark">
+        <item name="android:textColor">@color/material_on_background_disabled</item>
+    </style>
+
 </resources>

@@ -39,7 +39,6 @@
             android:fontFamily="@font/fa"
             android:onClick="@{()->codeBehind.goControlView()}"
             android:text="@string/chevron_left"
-            android:textColor="@color/black"
             android:textSize="18sp"
             app:layout_constraintBottom_toBottomOf="@+id/title_view"
             app:layout_constraintEnd_toStartOf="@+id/title_view" />
@@ -52,7 +51,6 @@
             android:layout_marginStart="44dp"
             android:onClick="@{()->codeBehind.goControlView()}"
             android:text="@string/my_profile"
-            android:textColor="@color/black"
             android:textSize="18sp"
             app:layout_constraintBottom_toBottomOf="@+id/my_toolbar"
             app:layout_constraintStart_toStartOf="@+id/my_toolbar"
@@ -139,6 +137,8 @@
             android:background="@color/blue"
             android:onClick="@{()->codeBehind.insertOrUpdateData()}"
             android:text="@string/save_text_button"
+            android:textAllCaps="true"
+            android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textInputLayout3" />

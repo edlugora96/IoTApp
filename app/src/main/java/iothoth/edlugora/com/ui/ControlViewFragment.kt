@@ -1,5 +1,6 @@
 package iothoth.edlugora.com.ui
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -50,9 +51,10 @@ class ControlViewFragment : Fragment() {
 
     private fun doTestConnection() {
         viewModel.getGadget.observe(viewLifecycleOwner) {
-            lifecycleScope.launch {
-                setVisibilityOnlineBadge(viewModel.sendTestConnection(it))
-
+            if (it != null) {
+                lifecycleScope.launch {
+                    setVisibilityOnlineBadge(viewModel.sendTestConnection(it))
+                }
             }
         }
     }
@@ -171,7 +173,14 @@ class ControlViewFragment : Fragment() {
     }
 
     private fun changeColorStatusBar() {
-        requireActivity().window.statusBarColor = getColor(requireActivity(), R.color.white)
+        val currentNightMode =
+            requireContext().resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+
+        when (currentNightMode) {
+            Configuration.UI_MODE_NIGHT_NO -> {requireActivity().window.statusBarColor = getColor(requireActivity(), R.color.white)}
+            Configuration.UI_MODE_NIGHT_YES -> {requireActivity().window.statusBarColor = getColor(requireActivity(), R.color.gray_background)}
+        }
+
     }
 
     private fun verifyFirstConf() {
