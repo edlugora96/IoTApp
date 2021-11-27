@@ -1,4 +1,4 @@
-package iothoth.edlugora.com.network.model
+package iothoth.edlugora.com.domain
 
 data class RequestApi(
     val data : String

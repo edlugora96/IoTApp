@@ -9,26 +9,19 @@ import androidx.core.content.ContextCompat.getColor
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import iothoth.edlugora.com.R
-import iothoth.edlugora.com.data.UsersApplication
-import iothoth.edlugora.com.data.model.EntitiesCombined
-import iothoth.edlugora.com.data.model.Users
 import iothoth.edlugora.com.databinding.FragmentProfileViewBinding
+import iothoth.edlugora.com.domain.EntitiesCombined
+import iothoth.edlugora.com.domain.Gadget
+import iothoth.edlugora.com.domain.User
 import iothoth.edlugora.com.viewModel.UserDatabaseViewModel
-import iothoth.edlugora.com.viewModel.UserDatabaseViewModelFactory
-import kotlinx.coroutines.launch
 
 
 class ProfileViewFragment : Fragment() {
 
     private lateinit var binding: FragmentProfileViewBinding
-    private val viewModel: UserDatabaseViewModel by activityViewModels {
-        UserDatabaseViewModelFactory(
-            (activity?.application as UsersApplication).database.userDao()
-        )
-    }
+    private val viewModel: UserDatabaseViewModel by activityViewModels()
 
     private var _userId = 0
     private var _gadgetId = 0
@@ -59,31 +52,29 @@ class ProfileViewFragment : Fragment() {
 
     private fun setInfoFromInputs(): EntitiesCombined {
         return EntitiesCombined(
-            user = Users(
-                id = _userId,
+            user = User(
                 name = binding.userNameInput.text.toString(),
-                firstConf = 1,
-                host = "",
-                type = "user"
+                firstStep = false,
             ),
-            gadget = Users(
+            gadget = Gadget(
                 id = _gadgetId,
                 name = binding.gadgetNameInput.text.toString(),
-                firstConf = 1,
-                host = binding.hostInput.text.toString(),
-                type = "gadget"
+                ipAddress = binding.hostInput.text.toString(),
+                ssid = "",
+                ssidPassword = "",
+                wifiOwnership = "Tukum"
             )
         )
     }
 
     fun insertOrUpdateData() {
-        lifecycleScope.launch {
+        /*lifecycleScope.launch {
             if (viewModel.insertOrUpdateUser(setInfoFromInputs())) {
                 goControlView()
             } else {
                 showToast()
             }
-        }
+        }*/
     }
 
     private fun showToast() {
@@ -96,7 +87,7 @@ class ProfileViewFragment : Fragment() {
 
     private fun observeAndUpdateIds() {
 
-        viewModel.getUser.observe(viewLifecycleOwner) {
+        /*viewModel.getUser.observe(viewLifecycleOwner) {
             if (it != null) {
                 _gadgetId = it.id
             }
@@ -106,6 +97,6 @@ class ProfileViewFragment : Fragment() {
             if (it != null) {
                 _userId = it.id
             }
-        }
+        }*/
     }
 }

@@ -1,13 +1,10 @@
-package iothoth.edlugora.com
+package iothoth.edlugora.com.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.navigation.NavController
-import androidx.navigation.dynamicfeatures.createGraph
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.fragment.fragment
-import androidx.navigation.ui.NavigationUI
-import iothoth.edlugora.com.ui.ProfileViewFragment
+import iothoth.edlugora.com.R
 
 
 class MainActivity : AppCompatActivity(R.layout.activity_main) {

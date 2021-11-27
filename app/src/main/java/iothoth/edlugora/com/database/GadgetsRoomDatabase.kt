@@ -1,29 +1,29 @@
-package iothoth.edlugora.com.data
+package iothoth.edlugora.com.database
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import iothoth.edlugora.com.data.Dao.UsersDao
-import iothoth.edlugora.com.data.model.Users
+import androidx.room.TypeConverters
 
-@Database(entities = [Users::class], version = 1, exportSchema = false)
-abstract class UsersRoomDatabase : RoomDatabase() {
-    abstract fun userDao(): UsersDao
+@Database(entities = [GadgetsEntity::class], version = 1, exportSchema = false)
+@TypeConverters(Converters::class)
+abstract class GadgetsRoomDatabase : RoomDatabase() {
+    abstract fun gadgetDao(): GadgetsDao
     companion object {
         @Volatile
-        private var INSTANCE: UsersRoomDatabase? = null
+        private var INSTANCE: GadgetsRoomDatabase? = null
+
 
         fun getDatabase(
             context: Context
-        ): UsersRoomDatabase {
+        ): GadgetsRoomDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
-                    UsersRoomDatabase::class.java,
-                    "app_database"
+                    GadgetsRoomDatabase::class.java,
+                    "gadgets_db"
                 )
-                    .allowMainThreadQueries()
                     .fallbackToDestructiveMigration()
                     .build()
                 INSTANCE = instance

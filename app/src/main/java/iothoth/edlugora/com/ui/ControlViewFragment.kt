@@ -13,28 +13,22 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import iothoth.edlugora.com.R
-import iothoth.edlugora.com.data.UsersApplication
-import iothoth.edlugora.com.data.model.Users
+import iothoth.edlugora.com.database.GadgetsEntity
 import iothoth.edlugora.com.databinding.FragmentControlViewBinding
-import iothoth.edlugora.com.network.model.ResponseApi
+import iothoth.edlugora.com.domain.ResponseApi
 import iothoth.edlugora.com.viewModel.UserDatabaseViewModel
-import iothoth.edlugora.com.viewModel.UserDatabaseViewModelFactory
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import java.util.*
 import kotlin.concurrent.schedule
 
 class ControlViewFragment : Fragment() {
     private lateinit var binding: FragmentControlViewBinding
-    private val viewModel: UserDatabaseViewModel by activityViewModels {
-        UserDatabaseViewModelFactory(
-            (activity?.application as UsersApplication).database.userDao()
-        )
-    }
+
+    private val viewModel: UserDatabaseViewModel by activityViewModels()
 
     private var isSent = false
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -45,22 +39,10 @@ class ControlViewFragment : Fragment() {
             DataBindingUtil.inflate(inflater, R.layout.fragment_control_view, container, false)
         verifyFirstConf()
         bind()
-        doTestConnection()
         return binding.root
     }
 
-    private fun doTestConnection() {
-        viewModel.getGadget.observe(viewLifecycleOwner) {
-            if (it != null) {
-                lifecycleScope.launch {
-                    setVisibilityOnlineBadge(viewModel.sendTestConnection(it))
-                }
-            }
-        }
-    }
-
     fun reload() {
-        doTestConnection()
         binding.progressBar.visibility = View.VISIBLE
         Timer().schedule(2000) {
             lifecycleScope.launch {
@@ -69,15 +51,16 @@ class ControlViewFragment : Fragment() {
         }
     }
 
-    private fun preventReSend(it: Users, action: String) {
+    private fun preventReSend(it: GadgetsEntity, action: String) {
+        binding.progressBar.visibility = View.VISIBLE
+
         lifecycleScope.launch {
             if (!isSent) {
                 binding.powerIcon.isClickable = false
                 binding.carIcon.isClickable = false
                 binding.peopleIcon.isClickable = false
                 binding.personIcon.isClickable = false
-                handlerSnackBar(viewModel.sendActionToApi(it, action))
-                binding.progressBar.visibility = View.VISIBLE
+//                handlerSnackBar(viewModel.sendActionToApi(it, action))
                 isSent = true
                 Timer().schedule(2000) {
                     lifecycleScope.launch {
@@ -93,45 +76,31 @@ class ControlViewFragment : Fragment() {
         }
     }
 
-    private fun setVisibilityOnlineBadge(res: ResponseApi) {
-        if (!res.data.isNullOrEmpty()) {
-            binding.onlineCardView.visibility = View.VISIBLE
-            binding.powerIcon.setTextColor(getColor(requireContext(), R.color.blue))
-        } else {
-            binding.powerIcon.setTextColor(getColor(requireContext(), R.color.error))
-            binding.onlineCardView.visibility = View.GONE
-        }
-
-    }
 
     fun doActionCar() {
-        doTestConnection()
-        viewModel.getGadget.observe(viewLifecycleOwner) {
+        /*viewModel.getGadget.observe(viewLifecycleOwner) {
             preventReSend(it, "A")
-        }
+        }*/
     }
 
     fun doActionPerson() {
-        doTestConnection()
-        viewModel.getGadget.observe(viewLifecycleOwner) {
+        /*viewModel.getGadget.observe(viewLifecycleOwner) {
             preventReSend(it, "P")
 
-        }
+        }*/
     }
 
     fun doActionPeople() {
-        doTestConnection()
-        viewModel.getGadget.observe(viewLifecycleOwner) {
+        /*viewModel.getGadget.observe(viewLifecycleOwner) {
             preventReSend(it, "M")
 
-        }
+        }*/
     }
 
     fun doActionCommon() {
-        doTestConnection()
-        viewModel.getGadget.observe(viewLifecycleOwner) {
+        /*viewModel.getGadget.observe(viewLifecycleOwner) {
             preventReSend(it, "C")
-        }
+        }*/
     }
 
     private fun handlerSnackBar(res: ResponseApi) {
@@ -173,10 +142,8 @@ class ControlViewFragment : Fragment() {
     }
 
     private fun changeColorStatusBar() {
-        val currentNightMode =
-            requireContext().resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
 
-        when (currentNightMode) {
+        when (requireContext().resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
             Configuration.UI_MODE_NIGHT_NO -> {requireActivity().window.statusBarColor = getColor(requireActivity(), R.color.white)}
             Configuration.UI_MODE_NIGHT_YES -> {requireActivity().window.statusBarColor = getColor(requireActivity(), R.color.gray_background)}
         }
@@ -184,7 +151,7 @@ class ControlViewFragment : Fragment() {
     }
 
     private fun verifyFirstConf() {
-        viewModel.getUser.observe(viewLifecycleOwner) {
+        /*viewModel.getUser.observe(viewLifecycleOwner) {
             if (it != null) {
                 if (it.firstConf == 0) {
                     goToProfileView()
@@ -192,7 +159,7 @@ class ControlViewFragment : Fragment() {
             } else {
                 goToProfileView()
             }
-        }
+        }*/
 
 
     }
