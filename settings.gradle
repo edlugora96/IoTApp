@@ -8,3 +8,9 @@ dependencyResolutionManagement {
 }
 rootProject.name = "IoThoth"
 include ':app'
+include ':sources:databasemanager'
+include ':sources:networkmanager'
+include ':sources:userpreferencesmanager'
+include ':data:repository'
+include ':data:domain'
+include ':data:usecases'

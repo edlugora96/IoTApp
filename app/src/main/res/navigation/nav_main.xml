@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_main"
-    app:startDestination="@id/splashFragment2">
+    app:startDestination="@id/controlViewFragment">
     <fragment
         android:id="@+id/controlViewFragment"
         android:name="iothoth.edlugora.com.ui.ControlViewFragment"
@@ -11,7 +11,16 @@
         tools:layout="@layout/fragment_control_view">
         <action
             android:id="@+id/action_controlViewFragment_to_profileViewFragment"
-            app:destination="@id/profileViewFragment" />
+            app:destination="@id/profileViewFragment" >
+        </action>
+        <argument
+            android:name="gadget_id"
+            app:argType="integer"
+            android:defaultValue="0" />
+        <argument
+            android:name="gadget_type"
+            app:argType="string"
+            android:defaultValue="control" />
     </fragment>
     <fragment
         android:id="@+id/profileViewFragment"
@@ -21,21 +30,11 @@
         <action
             android:id="@+id/action_profileViewFragment_to_controlViewFragment"
             app:destination="@id/controlViewFragment"
-            app:popUpTo="@id/controlViewFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/splashFragment2"
-        android:name="iothoth.edlugora.com.ui.SplashFragment"
-        android:label="SplashFragment" >
-        <action
-            android:id="@+id/action_splashFragment_to_controlViewFragment"
-            app:destination="@id/controlViewFragment"
-            app:popUpTo="@id/controlViewFragment"
-            app:popUpToInclusive="true" />
-        <action
-            android:id="@+id/action_splashFragment_to_profileViewFragment"
-            app:destination="@id/profileViewFragment"
-            app:popUpTo="@id/controlViewFragment"
-            app:popUpToInclusive="true" />
+            app:popUpTo="@id/controlViewFragment" >
+        </action>
+        <argument
+            android:name="gadgat_id"
+            app:argType="integer"
+            android:defaultValue="0" />
     </fragment>
 </navigation>

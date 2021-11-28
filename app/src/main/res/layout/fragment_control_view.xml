@@ -8,7 +8,7 @@
         <import type="android.view.View"/>
         <variable
             name="viewModel"
-            type="iothoth.edlugora.com.viewModel.UserDatabaseViewModel" />
+            type="iothoth.edlugora.com.viewModel.ControlViewModel" />
 
         <variable
             name="codeBehind"
