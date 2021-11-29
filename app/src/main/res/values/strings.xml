@@ -1464,7 +1464,6 @@
     <string name="youtube_square">&#xf431;</string>
     <string name="zhihu">&#xf63f;</string>
     <string name="image_des_perfil_photo">perfil photo</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="my_profile">My perfil</string>
     <string name="user_name">Nombre de usuario</string>

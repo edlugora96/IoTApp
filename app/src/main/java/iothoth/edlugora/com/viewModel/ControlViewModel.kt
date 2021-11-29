@@ -1,42 +1,67 @@
 package iothoth.edlugora.com.viewModel
 
 import android.app.Activity
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import android.util.Log
+import androidx.lifecycle.*
 import iothoth.edlugora.com.viewModel.utils.Event
 import iothoth.edlugora.com.viewModel.ControlViewModel.UiReactions
 import iothoth.edlugora.com.viewModel.ControlViewModel.UiReactions.*
+import iothoth.edlugora.domain.Gadget
+import iothoth.edlugora.domain.RequestApi
+import iothoth.edlugora.domain.User
+import iothoth.edlugora.domain.emptyGadget
+import iothoth.edlugora.usecases.GetGadget
 import iothoth.edlugora.usecases.GetUserInfo
 import iothoth.edlugora.usecases.TestGadgetConnection
 import iothoth.edlugora.usecases.TriggerGadgetAction
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
+import java.lang.Exception
+import java.util.*
+import java.util.concurrent.ScheduledFuture
+import kotlin.concurrent.schedule
 
 class ControlViewModel(
     private val triggerGadgetAction: TriggerGadgetAction,
     private val testGadgetConnection: TestGadgetConnection,
     private val getUserInfo: GetUserInfo,
-    ) : ViewModel() {
+    private val getGadget: GetGadget
+) : ViewModel() {
     //region Utils declarations
     private val _loading = MutableLiveData<Boolean>(false)
     val loading: LiveData<Boolean> = _loading
     private val _events = MutableLiveData<Event<UiReactions>>()
     val events: LiveData<Event<UiReactions>> get() = _events
+    private val _gadget = MutableLiveData<Gadget>()
 
     sealed class UiReactions {
         object NavToProfile : UiReactions()
         data class ShowSuccessSnackBar(val message: String) : UiReactions()
         data class ShowErrorSnackBar(val message: String) : UiReactions()
         data class ShowWarningSnackBar(val message: String) : UiReactions()
+        data class GetUserR(val data: User) : UiReactions()
+        data class GetGadgetR(val data: Gadget) : UiReactions()
     }
     //endregion
 
-    fun getUser(activity: Activity): LiveData<iothoth.edlugora.domain.User?> = MutableLiveData(getUserInfo.invoke(activity))
-
-    fun checkFirstStep(activity: Activity) {
-        if (getUser(activity).value?.firstStep == true) {
-            _events.value = Event(NavToProfile)
+    //region Get gadget and user information
+    fun gadget(id: Int): LiveData<Gadget> {
+        return if (id > 0) {
+            viewModelScope.launch {
+                getGadget.invoke(id).collect {
+                    _gadget.value = it
+                }
+            }
+            _gadget
+        } else {
+            MutableLiveData(_gadget.value?.emptyGadget())
         }
+
     }
+
+    fun getUser(activity: Activity): LiveData<User?> = MutableLiveData(getUserInfo.invoke(activity))
+    //endregion
+
 
     //region Control handler
     suspend fun testConnection(baseUrl: String, url: String) {
@@ -44,10 +69,40 @@ class ControlViewModel(
 
     }
 
-    suspend fun gadgetDoAction(baseUrl: String, url: String, data: iothoth.edlugora.domain.RequestApi) {
-        triggerGadgetAction.invoke(baseUrl, url, data)
+    fun gadgetDoAction(
+        baseUrl: String,
+        url: String,
+        data: RequestApi
+    ) {
+        _loading.value = true
+        viewModelScope.launch {
+            viewModelScope.launch {
+
+                val res = triggerGadgetAction.invoke(baseUrl, url, data)
+
+
+                when (res.code.toInt()) {
+                    in 200..299 -> _events.value = Event(ShowSuccessSnackBar(res.data.toString()))
+                    in 400..499 -> _events.value = Event(ShowWarningSnackBar(res.data.toString()))
+                    else -> _events.value = Event(ShowErrorSnackBar(res.error.toString()))
+                }
+
+            }.join()
+            Timer().schedule(2000) {
+                viewModelScope.launch {
+                    _loading.value = false
+                }
+            }
+        }
 
     }
     //endregion
 
+    //region Other methods
+    fun checkFirstStep(activity: Activity) {
+        if (getUser(activity).value?.firstStep == true) {
+            _events.value = Event(NavToProfile)
+        }
+    }
+    //endregion
 }

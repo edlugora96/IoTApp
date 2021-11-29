@@ -6,12 +6,10 @@ import iothoth.edlugora.com.R
 import iothoth.edlugora.com.viewModel.utils.Event
 import iothoth.edlugora.com.viewModel.ProfileViewModel.UiReactions
 import iothoth.edlugora.com.viewModel.ProfileViewModel.UiReactions.*
-import iothoth.edlugora.domain.UpdateUser
-import iothoth.edlugora.domain.User
-import iothoth.edlugora.domain.toUpdateUser
-import iothoth.edlugora.domain.toUser
+import iothoth.edlugora.domain.*
 import iothoth.edlugora.usecases.*
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class ProfileViewModel(
@@ -27,6 +25,7 @@ class ProfileViewModel(
     val loading: LiveData<Boolean> = _loading
     private val _events = MutableLiveData<Event<UiReactions>>()
     val events: LiveData<Event<UiReactions>> get() = _events
+    private val _gadget = MutableLiveData<Gadget>()
 
     sealed class UiReactions {
         object NavToControl : UiReactions()
@@ -36,18 +35,30 @@ class ProfileViewModel(
     //endregion
 
     //region Get user and gadgets information
-    fun gadget(id: Int): LiveData<iothoth.edlugora.domain.Gadget> = getGadget.invoke(id).asLiveData()
+    fun gadget(id: Int): LiveData<Gadget> {
+        return if (id>0){
+            viewModelScope.launch {
+                getGadget.invoke(id).collect {
+                    _gadget.value = it
+                }
+            }
+            _gadget
+        } else {
+            MutableLiveData(_gadget.value?.emptyGadget())
+        }
 
-    fun getUser(activity: Activity): LiveData<iothoth.edlugora.domain.User?> = MutableLiveData(getUserInfo.invoke(activity))
+    }
+
+    fun getUser(activity: Activity): LiveData<User?> = MutableLiveData(getUserInfo.invoke(activity))
 
     //endregion
 
     //region Insert or update gadgets and user
-    private fun setUserInfo(activity: Activity, data: iothoth.edlugora.domain.User): Job {
+    private fun setUserInfo(activity: Activity, data: User): Job {
         return viewModelScope.launch { setUserInfo.invoke(activity, data) }
     }
 
-    private suspend fun insertGadget(gadget: iothoth.edlugora.domain.Gadget): Job {
+    private suspend fun insertGadget(gadget: Gadget): Job {
         return viewModelScope.launch {
             _events.value = Event(
                 IdInsertedGadget(
@@ -59,7 +70,7 @@ class ProfileViewModel(
         }
     }
 
-    private suspend fun updateGadget(gadget: iothoth.edlugora.domain.Gadget): Job {
+    private suspend fun updateGadget(gadget: Gadget): Job {
         return viewModelScope.launch { updateGadget.invoke(gadget) }
 
     }
@@ -74,7 +85,7 @@ class ProfileViewModel(
 
 
 
-    suspend fun sendForm(activity: Activity, user: iothoth.edlugora.domain.User, gadget: iothoth.edlugora.domain.Gadget) {
+    suspend fun sendForm(activity: Activity, user: User, gadget: Gadget) {
         _loading.value = true
         try {
             if (!isEntryValid(gadget.name, user.name, gadget.ipAddress)) {

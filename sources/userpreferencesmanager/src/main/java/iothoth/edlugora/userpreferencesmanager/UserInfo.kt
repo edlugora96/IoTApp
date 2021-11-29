@@ -51,7 +51,11 @@ class UserInfo {
             if (data.pinedLocation != null) putString(PINED_LOCATION, data.pinedLocation)
             if (data.startScreen != null) putString(START_SCREEN, data.startScreen)
             if (data.firstStep != null) putBoolean(FIRST_STEP, data.firstStep!!)
-            if (data.lastGadgetAdded != null) putInt(LAST_GADGET_ADDED, data.lastGadgetAdded!!)
+            if (data.lastGadgetAdded != null) {
+                if (data.lastGadgetAdded!! > 0){
+                    putInt(LAST_GADGET_ADDED, data.lastGadgetAdded!!)
+                }
+            }
             commit()
         }
         return true

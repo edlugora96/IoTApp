@@ -5,7 +5,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <import type="android.view.View"/>
+
+        <import type="android.view.View" />
+
         <variable
             name="viewModel"
             type="iothoth.edlugora.com.viewModel.ControlViewModel" />
@@ -13,6 +15,7 @@
         <variable
             name="codeBehind"
             type="iothoth.edlugora.com.ui.ControlViewFragment" />
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -24,9 +27,11 @@
             android:id="@+id/power_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:clickable="@{!viewModel.loading}"
             android:fontFamily="@font/fa"
-            android:onClick="@{()->codeBehind.doActionCommon()}"
+            android:onClick="@{()->codeBehind.action('C')}"
             android:text="@string/power_off"
+            android:textColor="@{!viewModel.loading ? @color/blue : @color/material_on_background_disabled}"
             android:textSize="150sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -61,6 +66,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:onClick="@{()->codeBehind.goToProfileView()}"
+            android:text="@{codeBehind.user.name}"
             app:layout_constraintBottom_toTopOf="@+id/gadget_name"
             app:layout_constraintStart_toEndOf="@+id/cardView"
             app:layout_constraintTop_toTopOf="@+id/cardView"
@@ -72,6 +78,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:onClick="@{()->codeBehind.goToProfileView()}"
+            android:text="@{codeBehind.gadget.name}"
             android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="@+id/cardView"
             app:layout_constraintStart_toEndOf="@+id/cardView"
@@ -105,8 +112,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="25dp"
+            android:clickable="@{!viewModel.loading}"
             android:fontFamily="@font/fa"
-            android:onClick="@{()->codeBehind.doActionPerson()}"
+            android:onClick="@{()->codeBehind.action('P')}"
             android:text="@string/user"
             android:textSize="50sp"
             app:layout_constraintBottom_toTopOf="@+id/people_icon"
@@ -119,8 +127,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="25dp"
+            android:clickable="@{!viewModel.loading}"
             android:fontFamily="@font/fa"
-            android:onClick="@{()->codeBehind.doActionCar()}"
+            android:onClick="@{()->codeBehind.action('A')}"
             android:text="@string/car_side"
             android:textSize="50sp"
             app:layout_constraintBottom_toTopOf="@+id/people_icon"
@@ -134,8 +143,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="25dp"
+            android:clickable="@{!viewModel.loading}"
             android:fontFamily="@font/fa"
-            android:onClick="@{()->codeBehind.doActionPeople()}"
+            android:onClick="@{()->codeBehind.action('M')}"
             android:text="@string/users"
             android:textSize="50sp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -150,22 +160,23 @@
             android:layout_gravity="center"
             android:layout_marginStart="10dp"
             android:background="#009688"
+            android:onClick="@{()->codeBehind.goToProfileView()}"
             android:padding="5dp"
             app:cardBackgroundColor="@color/success"
             app:cardCornerRadius="250dp"
+            android:visibility="@{!viewModel.loading ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="@+id/gadget_name"
             app:layout_constraintStart_toEndOf="@+id/gadget_name"
             app:layout_constraintTop_toTopOf="@+id/gadget_name">
 
             <TextView
                 android:id="@+id/online"
-
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginStart="10dp"
-                android:textColor="@color/white"
                 android:text="@string/online"
+                android:textColor="@color/white"
                 tools:text="Online" />
         </androidx.cardview.widget.CardView>
 
@@ -176,7 +187,7 @@
             android:layout_height="0dp"
             android:indeterminate="true"
             android:indeterminateTint="@color/success"
-            android:visibility="gone"
+            android:visibility="@{viewModel.loading ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="@+id/person_icon"
             app:layout_constraintEnd_toEndOf="@+id/power_icon"
             app:layout_constraintStart_toStartOf="@+id/power_icon"
@@ -184,8 +195,7 @@
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-</layout>
-<!--
+</layout><!--
 
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"

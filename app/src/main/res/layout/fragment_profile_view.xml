@@ -76,7 +76,7 @@
                 android:inputType="textCapWords"
                 android:maxLength="20"
                 android:maxLines="1"
-                android:text="@{viewModel.getUser(codeBehind.activity).name}"/>
+                android:text="@{codeBehind.user.name}"/>
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -97,6 +97,7 @@
                 android:id="@+id/gadget_name_input"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:text="@{codeBehind.gadget.name}"
                 android:inputType="textCapWords"
                 android:maxLength="17"
                 android:maxLines="1"/>
@@ -120,6 +121,7 @@
                 android:id="@+id/ip_address_input"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:text="@{codeBehind.gadget.ipAddress}"
                 android:maxLength="50"
                 android:maxLines="1"/>
 
@@ -142,15 +144,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textInputLayout3" />
 
-        <TextView
-            android:id="@+id/temporalTexView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="50sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/save_button" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

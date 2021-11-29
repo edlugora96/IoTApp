@@ -1,7 +1,7 @@
 package iothoth.edlugora.usecases
 
 import android.app.Activity
-import iothoth.edlugora.domain.UpdateUser
+import iothoth.edlugora.domain.*
 import iothoth.edlugora.repository.GadgetRepository
 import iothoth.edlugora.repository.UserInfoRepository
 import kotlinx.coroutines.flow.Flow
@@ -10,13 +10,13 @@ import kotlinx.coroutines.flow.Flow
 class GetUserInfo(
     private val userInfoRepository: UserInfoRepository
 ) {
-    fun invoke(activity: Activity): iothoth.edlugora.domain.User? = userInfoRepository.getUserInfo(activity)
+    fun invoke(activity: Activity): User? = userInfoRepository.getUserInfo(activity)
 }
 
 class SetUserInfo(
     private val userInfoRepository: UserInfoRepository
 ) {
-    fun invoke(activity: Activity, data: iothoth.edlugora.domain.User?): Boolean =
+    fun invoke(activity: Activity, data: User?): Boolean =
         userInfoRepository.setUserInfo(activity, data)
 }
 
@@ -32,44 +32,44 @@ class UpdateUserInfo(
 class GetGadget(
     private val gadgetRepository: GadgetRepository
 ) {
-    fun invoke(id: Int): Flow<iothoth.edlugora.domain.Gadget> = gadgetRepository.getGadget(id)
+    fun invoke(id: Int): Flow<Gadget> = gadgetRepository.getGadget(id)
 }
 
 class GetAllGadgets(
     private val gadgetRepository: GadgetRepository
 ) {
-    fun invoke(): Flow<List<iothoth.edlugora.domain.Gadget>> = gadgetRepository.getAllGadgets()
+    fun invoke(): Flow<List<Gadget>> = gadgetRepository.getAllGadgets()
 }
 
 class TriggerGadgetAction(
     private val gadgetRepository: GadgetRepository
 ) {
-    suspend fun invoke(baseUrl: String, url: String, data: iothoth.edlugora.domain.RequestApi): iothoth.edlugora.domain.ResponseApi =
+    suspend fun invoke(baseUrl: String, url: String, data: RequestApi): ResponseApi =
         gadgetRepository.triggerGadgetAction(baseUrl, url, data)
 }
 
 class TestGadgetConnection(
     private val gadgetRepository: GadgetRepository
 ) {
-    suspend fun invoke(baseUrl: String, url: String): iothoth.edlugora.domain.ResponseApi =
+    suspend fun invoke(baseUrl: String, url: String): ResponseApi =
         gadgetRepository.testGadgetConnection(baseUrl, url)
 }
 
 class InsertGadget(
     private val gadgetRepository: GadgetRepository
 ) {
-    suspend fun invoke(gadget: iothoth.edlugora.domain.Gadget) : Long = gadgetRepository.insertGadget(gadget)
+    suspend fun invoke(gadget: Gadget) : Long = gadgetRepository.insertGadget(gadget)
 }
 
 class UpdateGadget(
     private val gadgetRepository: GadgetRepository
 ) {
-    suspend fun invoke(gadget: iothoth.edlugora.domain.Gadget) = gadgetRepository.updateGadget(gadget)
+    suspend fun invoke(gadget: Gadget) = gadgetRepository.updateGadget(gadget)
 }
 
 class DeleteGadget(
     private val gadgetRepository: GadgetRepository
 ) {
-    suspend fun invoke(gadget: iothoth.edlugora.domain.Gadget) = gadgetRepository.deleteGadget(gadget)
+    suspend fun invoke(gadget: Gadget) = gadgetRepository.deleteGadget(gadget)
 }
 //endregion

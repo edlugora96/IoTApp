@@ -1,11 +1,16 @@
 package iothoth.edlugora.repository
 
 import android.app.Activity
+import android.util.Log
 import iothoth.edlugora.domain.*
 import iothoth.edlugora.domain.repository.LocalGadgetDataSource
 import iothoth.edlugora.domain.repository.RemoteGadgetDataSource
 import iothoth.edlugora.domain.repository.SharedUserInfoDataSource
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.launch
 
 class GadgetRepository(
     private val localGadgetDataSource: LocalGadgetDataSource,

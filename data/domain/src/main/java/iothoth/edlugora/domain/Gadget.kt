@@ -13,18 +13,18 @@ data class Gadget(
     val location: String? = null,
     val coordinates: String? = null,
     val setupInfo: String? = null,
-    val type : String? = null
+    val type: String? = null
 )
 
 data class Value(
-    val name : String,
-    val value : String
+    val name: String,
+    val value: String
 )
 
-data class Action (
-    val icon : String,
-    val name : String,
-    val type : String,
-    val value : String,
-    val url : String
+data class Action(
+    val icon: String,
+    val name: String,
+    val type: String,
+    val value: String,
+    val url: String
 )

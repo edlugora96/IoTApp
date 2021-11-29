@@ -23,7 +23,9 @@ import iothoth.edlugora.com.viewModel.ProfileViewModel.UiReactions.*
 import iothoth.edlugora.com.viewModel.utils.Event
 import iothoth.edlugora.databasemanager.GadgetRoomDataSource
 import iothoth.edlugora.databasemanager.GadgetsRoomDatabase
+import iothoth.edlugora.domain.Gadget
 import iothoth.edlugora.domain.UpdateUser
+import iothoth.edlugora.domain.User
 import iothoth.edlugora.domain.repository.LocalGadgetDataSource
 import iothoth.edlugora.networkmanager.GadgetApiDataSource
 import iothoth.edlugora.networkmanager.GadgetRequest
@@ -39,8 +41,16 @@ class ProfileViewFragment : Fragment() {
 
     private lateinit var binding: FragmentProfileViewBinding
     private val navigationArg: ProfileViewFragmentArgs by navArgs()
-    private var _gadgetId = MutableLiveData<String>()
-    val gadgetId: LiveData<String> = _gadgetId
+//    private var _gadgetId = MutableLiveData<String>()
+//    val gadgetId: LiveData<String> = _gadgetId
+
+    private val _gadgetId: MutableLiveData<Int> = MutableLiveData()
+
+    private val _user: MutableLiveData<User> = MutableLiveData()
+    val user: LiveData<User> = _user
+
+    private val _gadget: MutableLiveData<Gadget> = MutableLiveData()
+    val gadget: LiveData<Gadget> = _gadget
 
     //region ViewModel Declaration
     private val database: GadgetsRoomDatabase by lazy {
@@ -99,15 +109,32 @@ class ProfileViewFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.events.observe(viewLifecycleOwner, Observer(this::validateEvents))
-        _gadgetId.value = navigationArg.gadgatId.toString()
-        viewModel.getUser(requireActivity()).observe(viewLifecycleOwner){
-            binding.temporalTexView.text = it?.lastGadgetAdded.toString() ?: "0"
-        }
         bind()
+        viewModel.events.observe(viewLifecycleOwner, Observer(this::validateEvents))
+        fillUserAndGadget()
     }
 
     //region Methods
+    private fun fillUserAndGadget(){
+        viewModel.getUser(requireActivity()).observe(viewLifecycleOwner) {
+            _user.value = it
+
+            _gadgetId.value = if (navigationArg.gadgatId > 0) {
+                navigationArg.gadgatId
+            } else {
+                it?.lastGadgetAdded ?: 0
+            }
+        }
+
+        _gadgetId.observe(viewLifecycleOwner) { id ->
+            run {
+                viewModel.gadget(id).observe(viewLifecycleOwner) {
+                    _gadget.value = it
+                }
+            }
+        }
+    }
+
     private fun bind() {
         binding.also {
             it.viewModel = viewModel
@@ -120,14 +147,14 @@ class ProfileViewFragment : Fragment() {
         requireActivity().window.statusBarColor = getColor(requireActivity(), R.color.blue)
     }
 
-    private fun getInputsValueForUser(): iothoth.edlugora.domain.User =
-        iothoth.edlugora.domain.User(
+    private fun getInputsValueForUser(): User =
+        User(
             name = binding.userNameInput.text.toString(),
             firstStep = false,
         )
 
-    private fun getInputsValueForGadget(): iothoth.edlugora.domain.Gadget =
-        iothoth.edlugora.domain.Gadget(
+    private fun getInputsValueForGadget(): Gadget =
+        Gadget(
             id = navigationArg.gadgatId,
             name = binding.gadgetNameInput.text.toString(),
             ipAddress = binding.ipAddressInput.text.toString(),
@@ -165,7 +192,7 @@ class ProfileViewFragment : Fragment() {
                     requireContext().showLongToast(this.message)
                 }
                 is IdInsertedGadget -> reaction.run {
-                    _gadgetId.value = this.id.toString()
+                    _gadgetId.value = this.id.toInt()
                     viewModel.updateUserInfo(requireActivity(), UpdateUser(
                         lastGadgetAdded = this.id.toInt()
                     ))

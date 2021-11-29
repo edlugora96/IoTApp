@@ -20,17 +20,3 @@ data class UpdateUser(
     val lastGadgetAdded: Int? = null
 )
 
-// Mappers
-fun User.toUpdateUser() = UpdateUser(
-    name, icon, firstStep, startScreen, pinedGadget, pinedLocation, lastGadgetAdded
-)
-
-fun UpdateUser.toUser() = User(
-    name ?: "",
-    icon ?: "",
-    firstStep ?: true,
-    startScreen ?: "",
-    pinedGadget ?: "",
-    pinedLocation ?: "",
-    lastGadgetAdded ?: 0
-)
