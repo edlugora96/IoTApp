@@ -10,10 +10,8 @@ import iothoth.edlugora.domain.Gadget
 import iothoth.edlugora.domain.RequestApi
 import iothoth.edlugora.domain.User
 import iothoth.edlugora.domain.emptyGadget
-import iothoth.edlugora.usecases.GetGadget
-import iothoth.edlugora.usecases.GetUserInfo
-import iothoth.edlugora.usecases.TestGadgetConnection
-import iothoth.edlugora.usecases.TriggerGadgetAction
+import iothoth.edlugora.usecases.*
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.lang.Exception
@@ -25,7 +23,9 @@ class ControlViewModel(
     private val triggerGadgetAction: TriggerGadgetAction,
     private val testGadgetConnection: TestGadgetConnection,
     private val getUserInfo: GetUserInfo,
-    private val getGadget: GetGadget
+    private val getGadget: GetGadget,
+    private val updateGadget: UpdateGadget,
+    private val deleteGadget: DeleteGadget
 ) : ViewModel() {
     //region Utils declarations
     private val _loading = MutableLiveData<Boolean>(false)
@@ -54,12 +54,16 @@ class ControlViewModel(
             }
             _gadget
         } else {
-            MutableLiveData(_gadget.value?.emptyGadget())
+            MutableLiveData(_gadget.emptyGadget())
         }
 
     }
 
     fun getUser(activity: Activity): LiveData<User?> = MutableLiveData(getUserInfo.invoke(activity))
+
+    fun deleteGadget(gadget: Gadget) {
+        viewModelScope.launch { deleteGadget.invoke(gadget) }
+    }
     //endregion
 
 
@@ -67,6 +71,10 @@ class ControlViewModel(
     suspend fun testConnection(baseUrl: String, url: String) {
         testGadgetConnection.invoke(baseUrl, url)
 
+    }
+
+    suspend fun updateGadget(gadget: Gadget): Job {
+        return viewModelScope.launch { updateGadget.invoke(gadget) }
     }
 
     fun gadgetDoAction(

@@ -4,9 +4,13 @@ import android.content.res.Configuration
 import android.net.*
 import android.os.Build
 import android.os.Bundle
+import android.text.Editable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AutoCompleteTextView
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat.getColor
 import androidx.databinding.DataBindingUtil
@@ -14,11 +18,17 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.textfield.TextInputEditText
 import iothoth.edlugora.com.IoThothApplication
 import iothoth.edlugora.com.R
+import iothoth.edlugora.com.databinding.DialogGadgetProfileBinding
 import iothoth.edlugora.com.databinding.FragmentControlViewBinding
+import iothoth.edlugora.com.utils.changeColorStatusBar
+import iothoth.edlugora.com.utils.showConfirmDialog
 import iothoth.edlugora.com.utils.showLongSnackBar
 import iothoth.edlugora.com.viewModel.ControlViewModel
 import iothoth.edlugora.com.viewModel.ControlViewModel.UiReactions
@@ -29,6 +39,7 @@ import iothoth.edlugora.databasemanager.GadgetsRoomDatabase
 import iothoth.edlugora.domain.Gadget
 import iothoth.edlugora.domain.RequestApi
 import iothoth.edlugora.domain.User
+import iothoth.edlugora.domain.emptyGadget
 import iothoth.edlugora.domain.repository.LocalGadgetDataSource
 import iothoth.edlugora.networkmanager.GadgetApiDataSource
 import iothoth.edlugora.networkmanager.GadgetRequest
@@ -37,6 +48,7 @@ import iothoth.edlugora.repository.UserInfoRepository
 import iothoth.edlugora.usecases.*
 import iothoth.edlugora.userpreferencesmanager.UserInfo
 import iothoth.edlugora.userpreferencesmanager.UserInfoDataSource
+import kotlinx.coroutines.launch
 import java.util.*
 
 class ControlViewFragment : Fragment() {
@@ -79,12 +91,20 @@ class ControlViewFragment : Fragment() {
     private val getGadget by lazy {
         GetGadget(gadgetRepository)
     }
+    private val updateGadget by lazy {
+        UpdateGadget(gadgetRepository)
+    }
+    private val deleteGadget by lazy {
+        DeleteGadget(gadgetRepository)
+    }
     private val viewModel: ControlViewModel by lazy {
         ControlViewModel(
             triggerGadgetAction,
             testGadgetConnection,
             getUserInfo,
-            getGadget
+            getGadget,
+            updateGadget,
+            deleteGadget
         )
     }
     //endregion
@@ -93,13 +113,16 @@ class ControlViewFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        changeColorStatusBar()
+        requireContext().changeColorStatusBar(
+            requireActivity(),
+            R.color.white,
+            R.color.gray_background
+        )
         binding =
             DataBindingUtil.inflate(inflater, R.layout.fragment_control_view, container, false)
         return binding.root
     }
 
-    @RequiresApi(Build.VERSION_CODES.N)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         bind()
@@ -130,7 +153,6 @@ class ControlViewFragment : Fragment() {
     }
 
     fun action(act: Char) {
-
         gadget.value.let {
             if (it != null) {
                 viewModel.gadgetDoAction(it.ipAddress, "/action", RequestApi(data = act.toString()))
@@ -144,23 +166,71 @@ class ControlViewFragment : Fragment() {
             it.codeBehind = this@ControlViewFragment
             it.lifecycleOwner = viewLifecycleOwner
         }
-    }
 
-    private fun changeColorStatusBar() {
-
-        when (requireContext().resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
-            Configuration.UI_MODE_NIGHT_NO -> {
-                requireActivity().window.statusBarColor = getColor(requireActivity(), R.color.white)
-            }
-            Configuration.UI_MODE_NIGHT_YES -> {
-                requireActivity().window.statusBarColor =
-                    getColor(requireActivity(), R.color.gray_background)
-            }
+        gadget.observe(viewLifecycleOwner) {
+            binding.navBar.gadgetName.text = it?.name ?: ""
         }
+        user.observe(viewLifecycleOwner) {
+            binding.navBar.profileName.text = it?.name ?: ""
+        }
+        binding.navBar.gadgetName.setOnClickListener { goToProfileView() }
+        binding.navBar.profileName.setOnClickListener { goToProfileView() }
+        binding.navBar.profilePhotoCard.setOnClickListener { goToProfileView() }
+        binding.navBar.menuIcon.setOnClickListener {
+            it.isClickable = false
+            val dialogGadgetProfile = BottomSheetDialog(requireContext())
 
+            dialogGadgetProfile.setContentView(R.layout.dialog_gadget_profile)
+
+            dialogGadgetProfile.setOnDismissListener { _ ->
+                it.isClickable = true
+            }
+
+            val gadgetNameInput =
+                dialogGadgetProfile.findViewById<TextInputEditText>(R.id.gadget_name_input)
+            val save = dialogGadgetProfile.findViewById<LinearLayout>(R.id.save_gadget)
+            val wifi = dialogGadgetProfile.findViewById<TextView>(R.id.wifi_ssid)
+            val delete = dialogGadgetProfile.findViewById<LinearLayout>(R.id.delete_gadget)
+
+            gadgetNameInput?.setText(gadget.value?.name.toString())
+            wifi?.text = gadget.value?.wifiOwnership
+            save?.setOnClickListener {
+                lifecycleScope.launch {
+                    viewModel.updateGadget(getInputsValueForGadget(gadgetNameInput?.text.toString()))
+                        .join()
+                    dialogGadgetProfile.onBackPressed()
+
+                }
+            }
+
+            fun acceptDeleteGadget() {
+                lifecycleScope.launch {
+                    if (gadget.value != null) {
+                        viewModel.deleteGadget(gadget.value!!)
+                        dialogGadgetProfile.onBackPressed()
+                        findNavController().navigateUp()
+                    }
+                }
+            }
+
+            delete?.setOnClickListener {
+                requireContext().showConfirmDialog(
+                    getString(R.string.delete_gadget_message, gadget.value?.name.toString()),
+                    getString(R.string.attention),
+                    ::acceptDeleteGadget
+                )
+            }
+
+
+            dialogGadgetProfile.show()
+        }
     }
 
-    fun goToProfileView() {
+
+    private fun getInputsValueForGadget(name: String): Gadget =
+        gadget.value!!.copy(id = gadget.value!!.id, name = name)
+
+    private fun goToProfileView() {
         val action = ControlViewFragmentDirections.actionControlViewFragmentToProfileViewFragment(
             _gadgetId.value ?: 0
         )
@@ -199,3 +269,4 @@ class ControlViewFragment : Fragment() {
     }
     //endregion
 }
+

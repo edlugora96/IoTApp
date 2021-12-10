@@ -6,6 +6,8 @@
 
     <data>
 
+        <import type="android.view.View" />
+
         <variable
             name="viewModel"
             type="iothoth.edlugora.com.viewModel.ProfileViewModel" />
@@ -17,7 +19,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         tools:context=".ui.ProfileViewFragment">
 
         <View
@@ -40,6 +42,7 @@
             android:onClick="@{()->codeBehind.goControlView()}"
             android:text="@string/chevron_left"
             android:textSize="18sp"
+            android:visibility="@{codeBehind.user.firstStep || codeBehind.user.lastGadgetAdded &lt; 1 ? View.GONE : View.VISIBLE}"
             app:layout_constraintBottom_toBottomOf="@+id/title_view"
             app:layout_constraintEnd_toStartOf="@+id/title_view" />
 
@@ -48,252 +51,142 @@
             android:id="@+id/title_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="44dp"
+            android:layout_marginStart="@dimen/large_start_margin"
             android:onClick="@{()->codeBehind.goControlView()}"
-            android:text="@string/my_profile"
+            android:text="@{codeBehind.user.firstStep ? @string/registration : @string/my_profile}"
             android:textSize="18sp"
             app:layout_constraintBottom_toBottomOf="@+id/my_toolbar"
             app:layout_constraintStart_toStartOf="@+id/my_toolbar"
             app:layout_constraintTop_toTopOf="@+id/my_toolbar" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/textInputLayout"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="15dp"
-            android:layout_marginTop="50dp"
-            android:layout_marginEnd="15dp"
-            android:hint="@string/user_name"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/my_toolbar">
+            android:layout_height="match_parent"
+            app:layout_constraintTop_toBottomOf="@+id/my_toolbar"
+            tools:layout_editor_absoluteX="0dp">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/user_name_input"
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textCapWords"
-                android:maxLength="20"
-                android:maxLines="1"
-                android:text="@{codeBehind.user.name}"/>
+                tools:context=".ui.ProfileViewFragment">
 
-        </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/userName"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginTop="50dp"
+                    android:layout_marginEnd="15dp"
+                    android:hint="@string/user_name"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/textInputLayout2"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="0sp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="15dp"
-            android:layout_marginTop="15dp"
-            android:layout_marginEnd="15dp"
-            android:hint="@string/gadget_name"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textInputLayout">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/user_name_input"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textCapWords"
+                        android:maxLength="20"
+                        android:maxLines="1"
+                        android:text="@{codeBehind.user.name}" />
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/gadget_name_input"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@{codeBehind.gadget.name}"
-                android:inputType="textCapWords"
-                android:maxLength="17"
-                android:maxLines="1"/>
+                </com.google.android.material.textfield.TextInputLayout>
 
-        </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/gadget_name"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="0sp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginEnd="15dp"
+                    android:hint="@string/gadget_name"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/userName">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/textInputLayout3"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="0sp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="15dp"
-            android:layout_marginTop="15dp"
-            android:layout_marginEnd="15dp"
-            android:hint="@string/ask_for_host"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textInputLayout2">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/gadget_name_input"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textCapWords"
+                        android:maxLength="17"
+                        android:maxLines="1"
+                        android:text="@{codeBehind.gadget.name}" />
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/ip_address_input"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@{codeBehind.gadget.ipAddress}"
-                android:maxLength="50"
-                android:maxLines="1"/>
+                </com.google.android.material.textfield.TextInputLayout>
 
-        </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/ipAddress"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="0sp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginEnd="15dp"
+                    android:hint="@string/ask_for_host"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/gadgetType">
 
-        <Button
-            android:id="@+id/save_button"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="15dp"
-            android:layout_marginTop="25dp"
-            android:layout_marginEnd="15dp"
-            android:background="@color/blue"
-            android:onClick="@{()->codeBehind.sendForm()}"
-            android:enabled="@{!viewModel.loading}"
-            android:text="@string/save_text_button"
-            android:textAllCaps="true"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textInputLayout3" />
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/ip_address_input"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:maxLength="50"
+                        android:maxLines="1"
+                        android:text="@{codeBehind.gadget.ipAddress}" />
 
+                </com.google.android.material.textfield.TextInputLayout>
+
+
+                <Button
+                    android:id="@+id/saveButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginTop="25dp"
+                    android:layout_marginEnd="15dp"
+                    android:layout_marginBottom="25dp"
+                    android:background="@color/blue"
+                    android:enabled="@{!viewModel.loading}"
+                    android:onClick="@{()->codeBehind.sendForm()}"
+                    android:text="@string/save_text_button"
+                    android:textAllCaps="true"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/ipAddress" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/gadgetType"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginEnd="15dp"
+                    android:hint="@string/gadget_type"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/gadget_name">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/selection_type_gadget"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:focusable="false"
+                        android:inputType="none" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </ScrollView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 </layout>
-
-<!--
-
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
-
-    <data>
-
-        <variable
-            name="viewModel"
-            type="iothoth.edlugora.com.viewModel.UserDatabaseViewModel" />
-
-        <variable
-            name="codeBehind"
-            type="iothoth.edlugora.com.ui.ProfileViewFragment" />
-    </data>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".ui.ProfileViewFragment">
-
-        <View
-            android:id="@+id/my_toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@color/blue"
-            android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
-
-        <TextView
-            android:id="@+id/upButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="10dp"
-            android:layout_marginBottom="2dp"
-            android:fontFamily="@font/fa"
-            android:onClick="@{()->codeBehind.goControlView()}"
-            android:text="@string/chevron_left"
-            android:textSize="18sp"
-            app:layout_constraintBottom_toBottomOf="@+id/title_view"
-            app:layout_constraintEnd_toStartOf="@+id/title_view" />
-
-
-        <TextView
-            android:id="@+id/title_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="44dp"
-            android:onClick="@{()->codeBehind.goControlView()}"
-            android:text="@string/my_profile"
-            android:textSize="18sp"
-            app:layout_constraintBottom_toBottomOf="@+id/my_toolbar"
-            app:layout_constraintStart_toStartOf="@+id/my_toolbar"
-            app:layout_constraintTop_toTopOf="@+id/my_toolbar" />
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/textInputLayout"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="15dp"
-            android:layout_marginTop="50dp"
-            android:layout_marginEnd="15dp"
-            android:hint="@string/user_name"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/my_toolbar">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/user_name_input"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textCapWords"
-                android:maxLength="20"
-                android:maxLines="1"
-                android:text="@{viewModel.getUser.name}" />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/textInputLayout2"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="0sp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="15dp"
-            android:layout_marginTop="15dp"
-            android:layout_marginEnd="15dp"
-            android:hint="@string/gadget_name"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textInputLayout">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/gadget_name_input"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textCapWords"
-                android:maxLength="17"
-                android:maxLines="1"
-                android:text="@{viewModel.getGadget.name}" />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/textInputLayout3"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="0sp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="15dp"
-            android:layout_marginTop="15dp"
-            android:layout_marginEnd="15dp"
-            android:hint="@string/ask_for_host"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textInputLayout2">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/host_input"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:maxLength="50"
-                android:maxLines="1"
-                android:text="@{viewModel.getGadget.host}" />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <Button
-            android:id="@+id/save_button"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="15dp"
-            android:layout_marginTop="25dp"
-            android:layout_marginEnd="15dp"
-            android:background="@color/blue"
-            android:onClick="@{()->codeBehind.sendForm()}"
-            android:text="@string/save_text_button"
-            android:textAllCaps="true"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textInputLayout3" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</layout>
-
--->

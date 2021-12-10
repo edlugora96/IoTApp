@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import androidx.core.content.ContextCompat.getColor
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -16,6 +18,7 @@ import androidx.navigation.fragment.navArgs
 import iothoth.edlugora.com.IoThothApplication
 import iothoth.edlugora.com.R
 import iothoth.edlugora.com.databinding.FragmentProfileViewBinding
+import iothoth.edlugora.com.utils.changeColorStatusBar
 import iothoth.edlugora.com.utils.showLongToast
 import iothoth.edlugora.com.viewModel.ProfileViewModel
 import iothoth.edlugora.com.viewModel.ProfileViewModel.UiReactions
@@ -41,8 +44,6 @@ class ProfileViewFragment : Fragment() {
 
     private lateinit var binding: FragmentProfileViewBinding
     private val navigationArg: ProfileViewFragmentArgs by navArgs()
-//    private var _gadgetId = MutableLiveData<String>()
-//    val gadgetId: LiveData<String> = _gadgetId
 
     private val _gadgetId: MutableLiveData<Int> = MutableLiveData()
 
@@ -101,7 +102,7 @@ class ProfileViewFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        changeColorStatusBar()
+        requireContext().changeColorStatusBar(requireActivity(), R.color.blue)
         binding =
             DataBindingUtil.inflate(inflater, R.layout.fragment_profile_view, container, false)
         return binding.root
@@ -141,10 +142,9 @@ class ProfileViewFragment : Fragment() {
             it.codeBehind = this@ProfileViewFragment
             it.lifecycleOwner = viewLifecycleOwner
         }
-    }
-
-    private fun changeColorStatusBar() {
-        requireActivity().window.statusBarColor = getColor(requireActivity(), R.color.blue)
+        val items = listOf("Control", "Piscina")
+        val adapter = ArrayAdapter(requireContext(), R.layout.item_view_select_input, items)
+        (binding.selectionTypeGadget as? AutoCompleteTextView)?.setAdapter(adapter)
     }
 
     private fun getInputsValueForUser(): User =
@@ -154,14 +154,14 @@ class ProfileViewFragment : Fragment() {
         )
 
     private fun getInputsValueForGadget(): Gadget =
-        Gadget(
-            id = navigationArg.gadgatId,
+        gadget.value!!.copy(id = navigationArg.gadgatId,
             name = binding.gadgetNameInput.text.toString(),
             ipAddress = binding.ipAddressInput.text.toString(),
+            unitId = "",
+            type =  (binding.selectionTypeGadget as? AutoCompleteTextView)?.text.toString(),
             ssid = "",
             ssidPassword = "",
-            wifiOwnership = "Tukum"
-        )
+            wifiOwnership = "Tukum")
 
     fun sendForm() {
         lifecycleScope.launch {

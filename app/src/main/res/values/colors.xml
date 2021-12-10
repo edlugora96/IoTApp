@@ -3,6 +3,7 @@
     <color name="error">#9a0007</color>
     <color name="success">#00600f</color>
     <color name="warning">#bb4d00</color>
+    <color name="transparent">#00000000</color>
     <color name="gray_background">#303030</color>
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>

@@ -4,7 +4,6 @@ import android.app.Activity
 import androidx.lifecycle.*
 import iothoth.edlugora.com.R
 import iothoth.edlugora.com.viewModel.utils.Event
-import iothoth.edlugora.com.viewModel.ProfileViewModel.UiReactions
 import iothoth.edlugora.com.viewModel.ProfileViewModel.UiReactions.*
 import iothoth.edlugora.domain.*
 import iothoth.edlugora.usecases.*
@@ -44,7 +43,7 @@ class ProfileViewModel(
             }
             _gadget
         } else {
-            MutableLiveData(_gadget.value?.emptyGadget())
+            MutableLiveData(_gadget.emptyGadget())
         }
 
     }
@@ -88,14 +87,13 @@ class ProfileViewModel(
     suspend fun sendForm(activity: Activity, user: User, gadget: Gadget) {
         _loading.value = true
         try {
-            if (!isEntryValid(gadget.name, user.name, gadget.ipAddress)) {
+            if (!isEntryValid(gadget.name, user.name, gadget.ipAddress, gadget.type)) {
                 _events.value = Event(ShowToast(R.string.error_message))
                 _loading.value = false
                 return
             }
 
             if (user.name.isNotEmpty() && gadget.id != 0) {
-                updateUserInfo(activity, user).join()
                 updateUserInfo(activity, user).join()
                 updateGadget(gadget).join()
                 _events.value = Event(NavToControl)
@@ -116,8 +114,8 @@ class ProfileViewModel(
     //endregion
 
     //region Others methods
-    private fun isEntryValid(gadgetName: String, userName: String, ipAddress: String): Boolean {
-        if (gadgetName.isBlank() || userName.isBlank() || ipAddress.isBlank()) {
+    private fun isEntryValid(gadgetName: String, userName: String, ipAddress: String, gadgetType: String?): Boolean {
+        if (gadgetName.isBlank() || userName.isBlank() || ipAddress.isBlank() || gadgetType.isNullOrEmpty() ) {
             return false
         }
         return true

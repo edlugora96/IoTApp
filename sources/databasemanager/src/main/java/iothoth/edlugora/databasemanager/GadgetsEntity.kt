@@ -10,6 +10,8 @@ import iothoth.edlugora.domain.Value
 data class GadgetsEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
+    @ColumnInfo(name = "u_id")
+    val unitId: String?,
     val name: String,
     val icon: String?,
     val actions: List<Action>?,
@@ -25,6 +27,6 @@ data class GadgetsEntity(
     val coordinates: String?,
     @ColumnInfo(name = "setup_info")
     val setupInfo: String?,
-    val type : String?
+    val type: String?,
+    val status: String?
 )
-

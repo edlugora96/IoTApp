@@ -5,10 +5,7 @@ import androidx.lifecycle.*
 import iothoth.edlugora.com.R
 import iothoth.edlugora.com.viewModel.utils.Event
 import iothoth.edlugora.com.viewModel.UserDatabaseViewModel.UiReactions.*
-import iothoth.edlugora.domain.Gadget
-import iothoth.edlugora.domain.UpdateUser
-import iothoth.edlugora.domain.User
-import iothoth.edlugora.domain.toUpdateUser
+import iothoth.edlugora.domain.*
 import iothoth.edlugora.usecases.*
 import kotlinx.coroutines.*
 

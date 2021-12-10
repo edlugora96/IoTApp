@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_main"
-    app:startDestination="@id/controlViewFragment">
+    app:startDestination="@id/gadgetsListFragment">
     <fragment
         android:id="@+id/controlViewFragment"
         android:name="iothoth.edlugora.com.ui.ControlViewFragment"
@@ -21,6 +21,11 @@
             android:name="gadget_type"
             app:argType="string"
             android:defaultValue="control" />
+        <action
+            android:id="@+id/action_controlViewFragment_to_gadgetsListFragment"
+            app:destination="@id/gadgetsListFragment"
+            app:popUpTo="@id/gadgetsListFragment"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/profileViewFragment"
@@ -36,5 +41,27 @@
             android:name="gadgat_id"
             app:argType="integer"
             android:defaultValue="0" />
+    </fragment>
+    <fragment
+        android:id="@+id/gadgetsListFragment"
+        android:name="iothoth.edlugora.com.ui.GadgetsListFragment"
+        android:label="GadgetsListFragment" >
+        <action
+            android:id="@+id/action_gadgetsListFragment_to_controlViewFragment"
+            app:destination="@id/controlViewFragment" />
+        <action
+            android:id="@+id/action_gadgetsListFragment_to_insertGadgetFragment"
+            app:destination="@id/insertGadgetFragment" />
+        <argument
+            android:name="gadget_id"
+            app:argType="integer" />
+    </fragment>
+    <fragment
+        android:id="@+id/insertGadgetFragment"
+        android:name="iothoth.edlugora.com.ui.InsertGadgetFragment"
+        android:label="InsertGadgetFragment" >
+        <action
+            android:id="@+id/action_insertGadgetFragment_to_controlViewFragment"
+            app:destination="@id/controlViewFragment" />
     </fragment>
 </navigation>

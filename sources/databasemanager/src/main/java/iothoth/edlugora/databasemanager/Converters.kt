@@ -16,12 +16,17 @@ class Converters {
         .add(KotlinJsonAdapterFactory())
         .build()
 
-    private var type: ParameterizedType = newParameterizedType(
+    private var actionType: ParameterizedType = newParameterizedType(
         List::class.java,
-        String::class.java
+        Action::class.java
     )
-    private var actionJsonAdapter: JsonAdapter<List<Action>> = moshi.adapter(type)
-    private var valueJsonAdapter: JsonAdapter<List<Value>> = moshi.adapter(type)
+
+    private var valueType: ParameterizedType = newParameterizedType(
+        List::class.java,
+        Value::class.java
+    )
+    private var actionJsonAdapter: JsonAdapter<List<Action>> = moshi.adapter(actionType)
+    private var valueJsonAdapter: JsonAdapter<List<Value>> = moshi.adapter(valueType)
 
 
     @TypeConverter
@@ -52,7 +57,10 @@ class Converters {
             return listOf(
                 Value(
                     name = "",
-                    value = ""
+                    icon = "",
+                    type = "",
+                    value = "",
+                    url = "",
                 )
             )
         }

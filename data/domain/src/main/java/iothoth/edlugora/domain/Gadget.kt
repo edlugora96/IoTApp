@@ -1,24 +1,29 @@
 package iothoth.edlugora.domain
 
 data class Gadget(
-    val id: Int = 0,
+    val id: Int,
+    val unitId: String?,
     val name: String,
-    val icon: String? = null,
-    val actions: List<Action>? = null,
-    val values: List<Value>? = null,
+    val icon: String?,
+    val actions: List<Action>?,
+    val values: List<Value>?,
     val ipAddress: String,
     val ssid: String,
     val ssidPassword: String,
     val wifiOwnership: String,
-    val location: String? = null,
-    val coordinates: String? = null,
-    val setupInfo: String? = null,
-    val type: String? = null
+    val location: String?,
+    val coordinates: String?,
+    val setupInfo: String?,
+    val type: String?,
+    val status: String?
 )
 
 data class Value(
+    val icon: String,
     val name: String,
-    val value: String
+    val type: String,
+    val value: String,
+    val url: String
 )
 
 data class Action(
@@ -28,3 +33,5 @@ data class Action(
     val value: String,
     val url: String
 )
+
+

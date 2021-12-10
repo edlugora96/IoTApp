@@ -6,4 +6,13 @@
     <dimen name="base_margin">8dp</dimen>
     <dimen name="radio_button_padding">8dp</dimen>
     <dimen name="checkout_item_margin">4dp</dimen>
+    <dimen name="normal_start_margin">15dp</dimen>
+    <dimen name="large_start_margin">44dp</dimen>
+
+    <dimen name="bottom_prompt_chip_text_size">14sp</dimen>
+    <dimen name="bottom_prompt_chip_margin_bottom">28dp</dimen>
+    <dimen name="bottom_prompt_chip_corner_radius">8dp</dimen>
+    <dimen name="large_text">25sp</dimen>
+    <dimen name="list_item_spacing">16dp</dimen>
+    <dimen name="list_item_spacing_half">8dp</dimen>
 </resources>

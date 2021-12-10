@@ -1466,12 +1466,31 @@
     <string name="image_des_perfil_photo">perfil photo</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="my_profile">My perfil</string>
+    <string name="registration">Registro</string>
     <string name="user_name">Nombre de usuario</string>
     <string name="gadget_name">Nombre del dispositivo</string>
     <string name="ask_for_host">Host de enlace</string>
     <string name="save_text_button">Guardar</string>
+    <string name="delete_text_button">Borrar</string>
     <string name="logo">logo</string>
-    <string name="loading">Cargado...</string>
+    <string name="attention">Atención…</string>
+    <string name="loading">Cargado…</string>
     <string name="online">Online</string>
+    <string name="decline">Cancelar</string>
+    <string name="accept">Aceptar</string>
+    <string name="delete_gadget_message">¿Deseas elminar %s?</string>
+    <string name="gadget_type">Tipo de dispositivo</string>
+    <string name="list_of_devices">Lista de dispositivos</string>
+    <string name="add_gadget">add gadget</string>
+    <string name="cd_flash_button">Toggle camera flash</string>
+    <string name="searching_qr_message">Buscando codigo QR</string>
+    <string name="success_qr_message">Codigo QR conseguido</string>
+    <string name="error_qr_message">Error: codigo QR no soportado</string>
+    <string name="delete_gadget">Eliminar dispositivo</string>
+    <string name="save_gadget">Guardar cambios</string>
+    <string name="close_gadget_dialog">Cerrar</string>
+    <string name="wifi_dialog">Wi-Fi asignado:</string>
+    <string name="sync_wifi">Sincronizar Wi-Fi</string>
+    <string name="update_gadget">Actualizar dispositivo</string>
 
 </resources>
