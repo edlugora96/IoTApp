@@ -222,8 +222,6 @@ class ControlViewFragment : Fragment() {
                     ::acceptDeleteGadget
                 )
             }
-
-
             dialogGadgetProfile.show()
         }
     }
