@@ -1,8 +1,12 @@
 package iothoth.edlugora.databasemanager
 
+import android.util.Log
+import androidx.lifecycle.MutableLiveData
 import iothoth.edlugora.domain.Gadget
+import iothoth.edlugora.domain.emptyGadget
 import iothoth.edlugora.domain.repository.LocalGadgetDataSource
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 
 class GadgetRoomDataSource(
@@ -21,6 +25,7 @@ class GadgetRoomDataSource(
 
     override fun getGadget(id: Int): Flow<Gadget> =
         gadgetsDao.getGadget(id).map(GadgetsEntity::toGadgetDomain)
+
 
     override fun getAllGadgets(): Flow<List<Gadget>> =
         gadgetsDao.getAllGadgets().map(List<GadgetsEntity>::toGadgetDomainList)

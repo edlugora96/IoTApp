@@ -19,7 +19,6 @@ class GadgetsListViewModel(
     private val updateGadget: UpdateGadget,
     private val updateUserInfo: UpdateUserInfo,
     private val getUserInfo: GetUserInfo,
-    private val getGadget: GetGadget,
     private val getAllGadgets: GetAllGadgets,
     private val deleteGadget: DeleteGadget,
 ) : ViewModel() {
@@ -42,7 +41,7 @@ class GadgetsListViewModel(
     //endregion
 
     //region Get gadget and user information
-    fun gadget(id: Int): LiveData<Gadget> {
+    /*fun gadget(id: Int): LiveData<Gadget> {
         return if (id > 0) {
             viewModelScope.launch {
                 getGadget.invoke(id).collect {
@@ -54,7 +53,7 @@ class GadgetsListViewModel(
             MutableLiveData(_gadget.emptyGadget())
         }
 
-    }
+    }*/
 
     /*val allGadget: LiveData<List<Gadget>> = run {
         viewModelScope.launch {

@@ -72,9 +72,6 @@ class GadgetsListFragment : Fragment() {
     private val updateUserInfo by lazy {
         UpdateUserInfo(userInfoRepository)
     }
-    private val getGadget by lazy {
-        GetGadget(gadgetRepository)
-    }
     private val getAllGadgets by lazy {
         GetAllGadgets(gadgetRepository)
     }
@@ -90,7 +87,6 @@ class GadgetsListFragment : Fragment() {
             updateGadget,
             updateUserInfo,
             getUserInfo,
-            getGadget,
             getAllGadgets,
             deleteGadget
         )

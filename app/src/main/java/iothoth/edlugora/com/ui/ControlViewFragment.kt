@@ -205,8 +205,10 @@ class ControlViewFragment : Fragment() {
 
             fun acceptDeleteGadget() {
                 lifecycleScope.launch {
-                    if (gadget.value != null) {
-                        viewModel.deleteGadget(gadget.value!!)
+                    if (_gadgetId.value != null) {
+                        viewModel.deleteGadget(MutableLiveData<Gadget>().emptyGadget().copy(
+                            id = _gadgetId.value!!.toInt()
+                        ))
                         dialogGadgetProfile.onBackPressed()
                         findNavController().navigateUp()
                     }
