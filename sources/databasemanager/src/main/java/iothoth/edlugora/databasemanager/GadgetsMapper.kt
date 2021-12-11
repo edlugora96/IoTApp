@@ -27,41 +27,10 @@ fun GadgetsEntity.toGadgetDomain() = MutableLiveData<Gadget>().emptyGadget().cop
     type = type,
     status = status,
 )
-/*fun GadgetsEntity.toGadgetDomain(): Gadget {
-    var res = MutableLiveData<Gadget>().emptyGadget()
-
-    try {
-     res = Gadget(
-         id = id,
-         unitId = unitId,
-         name = name,
-         icon = icon,
-         actions = actions,
-         values = values,
-         ipAddress = ipAddress,
-         ssid = ssid,
-         ssidPassword = ssidPassword,
-         wifiOwnership = wifiOwnership,
-         location = location,
-         coordinates = coordinates,
-         setupInfo = setupInfo,
-         type = type,
-         status = status,
-     )
-    } catch (ex : NullPointerException){
-        Log.d("someOther", ex.message.toString())
-    } catch (ex: Exception){
-        Log.d("someOther", ex.message.toString())
-    }
-
-    return res
-
-
-}*/
 
 fun Gadget.toGadgetEntity() = GadgetsEntity(
     id = id,
-    unitId= unitId,
+    unitId = unitId,
     name = name,
     icon = icon,
     actions = actions,

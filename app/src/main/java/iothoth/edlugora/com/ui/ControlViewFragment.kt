@@ -15,6 +15,7 @@ import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat.getColor
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
@@ -55,13 +56,16 @@ class ControlViewFragment : Fragment() {
     private lateinit var binding: FragmentControlViewBinding
     private val navigationArg: ControlViewFragmentArgs by navArgs()
 
-    private val _gadgetId: MutableLiveData<Int> = MutableLiveData()
+    private var _gadgetId: Int = 0
 
     private val _user: MutableLiveData<User> = MutableLiveData()
     val user: LiveData<User> = _user
 
     private val _gadget: MutableLiveData<Gadget> = MutableLiveData()
     val gadget: LiveData<Gadget> = _gadget
+
+    private var _gadgetObserver: LiveData<Gadget> = MutableLiveData()
+    private var _userObserver: LiveData<User?> = MutableLiveData()
 
     //region ViewModel Declaration
     private val database: GadgetsRoomDatabase by lazy {
@@ -133,23 +137,23 @@ class ControlViewFragment : Fragment() {
 
     //region Methods
     private fun fillUserAndGadget() {
-        viewModel.getUser(requireActivity()).observe(viewLifecycleOwner) {
+        _userObserver = viewModel.getUser(requireActivity())
+        _userObserver.observe(viewLifecycleOwner) {
             _user.value = it
 
-            _gadgetId.value = if (navigationArg.gadgetId > 0) {
+            _gadgetId = if (navigationArg.gadgetId > 0) {
                 navigationArg.gadgetId
             } else {
                 it?.lastGadgetAdded ?: 0
             }
+            _gadgetObserver = viewModel.gadget(_gadgetId)
         }
 
-        _gadgetId.observe(viewLifecycleOwner) { id ->
-            run {
-                viewModel.gadget(id).observe(viewLifecycleOwner) {
-                    _gadget.value = it
-                }
-            }
+        _gadgetObserver.observe(viewLifecycleOwner) { gadgetRequest ->
+            _gadget.value = gadgetRequest
         }
+
+
     }
 
     fun action(act: Char) {
@@ -204,14 +208,15 @@ class ControlViewFragment : Fragment() {
             }
 
             fun acceptDeleteGadget() {
+                _gadgetObserver.removeObservers(viewLifecycleOwner)
                 lifecycleScope.launch {
-                    if (_gadgetId.value != null) {
-                        viewModel.deleteGadget(MutableLiveData<Gadget>().emptyGadget().copy(
-                            id = _gadgetId.value!!.toInt()
-                        ))
-                        dialogGadgetProfile.onBackPressed()
-                        findNavController().navigateUp()
-                    }
+                    viewModel.deleteGadget(
+                        MutableLiveData<Gadget>().emptyGadget().copy(
+                            id = _gadgetId
+                        )
+                    )
+                    findNavController().navigateUp()
+                    dialogGadgetProfile.onBackPressed()
                 }
             }
 
@@ -232,7 +237,7 @@ class ControlViewFragment : Fragment() {
 
     private fun goToProfileView() {
         val action = ControlViewFragmentDirections.actionControlViewFragmentToProfileViewFragment(
-            _gadgetId.value ?: 0
+            _gadgetId
         )
         findNavController().navigate(action)
     }
