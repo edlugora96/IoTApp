@@ -8,6 +8,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.net.Uri
+import android.net.wifi.ScanResult
 import android.os.Build
 import android.util.Log
 import android.view.View
@@ -22,6 +23,7 @@ import com.google.android.material.snackbar.Snackbar
 import iothoth.edlugora.com.R
 import java.io.IOException
 import java.io.InputStream
+
 
 const val TAG = "Utils"
 
@@ -58,32 +60,38 @@ fun Context.changeColorStatusBar(activity: Activity, color : Int) {
         ContextCompat.getColor(activity, color)
 }
 
-fun Context.showConfirmDialog(message:String, accept:()->Unit, decline:(()->Unit)? = null){
+fun Context.showConfirmDialog(message:String, title: String, accept: () -> Unit){
     MaterialAlertDialogBuilder(this).setMessage(message)
-        .setNegativeButton(resources.getString(R.string.decline)) { dialog, which ->
-            if (decline != null) {
-                decline()
-            }
-        }
-        .setPositiveButton(resources.getString(R.string.accept)) { dialog, which ->
+        .setTitle(title)
+        .setPositiveButton(resources.getString(R.string.accept)) { _, _ ->
             accept()
         }
         .show()
 }
 
-fun Context.showConfirmDialog(message:String, title: String, accept:()->Unit, decline:(()->Unit)? = null){
+fun Context.showConfirmDialog(message:String, accept:()->Unit, decline:()->Unit){
     MaterialAlertDialogBuilder(this).setMessage(message)
-        .setTitle(title)
-        .setNegativeButton(resources.getString(R.string.decline)) { dialog, which ->
-            if (decline != null) {
-                decline()
-            }
+        .setNegativeButton(resources.getString(R.string.decline)) { _, _ ->
+            decline()
         }
-        .setPositiveButton(resources.getString(R.string.accept)) { dialog, which ->
+        .setPositiveButton(resources.getString(R.string.accept)) { _, _ ->
             accept()
         }
         .show()
 }
+
+fun Context.showConfirmDialog(message:String, title: String, accept:()->Unit, decline:()->Unit){
+    MaterialAlertDialogBuilder(this).setMessage(message)
+        .setTitle(title)
+        .setNegativeButton(resources.getString(R.string.decline)) { _, _ ->
+            decline()
+        }
+        .setPositiveButton(resources.getString(R.string.accept)) { _, _ ->
+            accept()
+        }
+        .show()
+}
+
 
 fun Activity.showLongSnackBar(viewId: Int, message: String, color: Int) {
     Snackbar.make(
@@ -188,4 +196,15 @@ fun getExifOrientationTag(resolver: ContentResolver, imageUri: Uri): Int {
     } else {
         ExifInterface.ORIENTATION_UNDEFINED
     }
+}
+
+fun isWifiLocked(scanResult: ScanResult): Boolean {
+    val cap: String = scanResult.capabilities
+    val securityModes = arrayOf("WEP", "WPA", "WPA2", "WPA_EAP", "IEEE8021X")
+    for (i in securityModes.indices.reversed()) {
+        if (cap.contains(securityModes[i])) {
+            return true
+        }
+    }
+    return false
 }

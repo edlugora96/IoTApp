@@ -55,6 +55,9 @@
         <argument
             android:name="gadget_id"
             app:argType="integer" />
+        <action
+            android:id="@+id/action_gadgetsListFragment_to_detectNetworkFragment"
+            app:destination="@id/detectNetworkFragment" />
     </fragment>
     <fragment
         android:id="@+id/insertGadgetFragment"
@@ -63,5 +66,12 @@
         <action
             android:id="@+id/action_insertGadgetFragment_to_controlViewFragment"
             app:destination="@id/controlViewFragment" />
+        <action
+            android:id="@+id/action_insertGadgetFragment_to_detectNetworkFragment"
+            app:destination="@id/detectNetworkFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/detectNetworkFragment"
+        android:name="iothoth.edlugora.com.ui.DetectNetworkFragment"
+        android:label="DetectNetworkFragment" />
 </navigation>

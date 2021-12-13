@@ -139,6 +139,10 @@ class GadgetsListFragment : Fragment() {
             it.codeBehind = this@GadgetsListFragment
             it.lifecycleOwner = viewLifecycleOwner
         }
+
+        binding.navBar.profilePhotoCard.setOnClickListener {
+            goToDetectNetworkView()
+        }
     }
 
     private fun fillUserAndGadget() {
@@ -151,11 +155,9 @@ class GadgetsListFragment : Fragment() {
         }
     }
 
-    private fun goToProfileView() {
-        /*val action = ControlViewFragmentDirections.actionControlViewFragmentToProfileViewFragment(
-            _gadgetId.value ?: 0
-        )
-        findNavController().navigate(action)*/
+    private fun goToDetectNetworkView() {
+        val action = GadgetsListFragmentDirections.actionGadgetsListFragmentToDetectNetworkFragment()
+        findNavController().navigate(action)
     }
 
     fun goToInsertGadget() {
@@ -187,7 +189,7 @@ class GadgetsListFragment : Fragment() {
                         ContextCompat.getColor(requireContext(), R.color.warning)
                     )
                 }
-                else -> goToProfileView()
+                else -> goToDetectNetworkView()
             }
 
         }
