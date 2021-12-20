@@ -26,7 +26,7 @@ class WifiScannerAdapter(private val actualSsid: ()->String, private val onItemC
                     View.GONE
                 }
 
-                if (actualSsid().replace("\"", "") == scanned.SSID){
+                if (actualSsid() == scanned.SSID){
                     wifiIsLock.visibility =View.GONE
                     wifiIsHome.visibility= View.VISIBLE
                 } else {

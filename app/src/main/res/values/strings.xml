@@ -1496,5 +1496,6 @@
     <string name="wifi_selected">SSID Wifi selecionado</string>
     <string name="continue_to_next">Continuar</string>
     <string name="wifi_password">Contraseña</string>
+    <string name="wifi_error_password">Error: no se pudo conectar a la red</string>
 
 </resources>

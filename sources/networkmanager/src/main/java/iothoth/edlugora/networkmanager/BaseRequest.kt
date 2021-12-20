@@ -12,10 +12,8 @@ class BaseRequest(private var url: String) {
         .add(KotlinJsonAdapterFactory())
         .build()
     private val client: OkHttpClient = OkHttpClient.Builder()
-        .connectTimeout(5, TimeUnit.SECONDS)
-        .writeTimeout(5, TimeUnit.SECONDS)
-        .readTimeout(5, TimeUnit.SECONDS)
-        .callTimeout(5, TimeUnit.SECONDS)
+        //.connectTimeout(5, TimeUnit.SECONDS)
+        //.callTimeout(5, TimeUnit.SECONDS)
         .build()
 
     fun build() = Retrofit.Builder()

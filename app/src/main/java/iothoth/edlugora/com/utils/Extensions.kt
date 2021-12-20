@@ -3,6 +3,7 @@ package iothoth.edlugora.com.utils
 import android.app.Activity
 import android.content.ContentResolver
 import android.content.Context
+import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -14,13 +15,19 @@ import android.util.Log
 import android.view.View
 import android.view.WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
 import android.widget.Toast
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.exifinterface.media.ExifInterface
+import androidx.fragment.app.Fragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import iothoth.edlugora.com.R
+import iothoth.edlugora.com.ui.DetectNetworkFragment
 import java.io.IOException
 import java.io.InputStream
 
@@ -35,7 +42,27 @@ fun Context.showLongToast(@StringRes resourceId: Int) {
     Toast.makeText(this, resourceId, Toast.LENGTH_LONG).show()
 }
 
-fun Context.changeColorStatusBar(activity: Activity, lightColor : Int, nightColor : Int) {
+private fun hasPermissions(context: Context, vararg permissions: String): Boolean =
+    permissions.all {
+        ActivityCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
+    }
+
+class PermissionHandler(
+    private val context: Context,
+    private val PERMISSIONS: Array<String>,
+    private val requestPermissions: (callback: () -> Unit) -> Unit
+) {
+    fun ifPermissionsAreGranted(callback: () -> Unit) {
+        if (!hasPermissions(context, *PERMISSIONS)) {
+            requestPermissions(callback)
+        } else {
+            callback()
+        }
+    }
+}
+
+
+fun Context.changeColorStatusBar(activity: Activity, lightColor: Int, nightColor: Int) {
     when (this.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
         Configuration.UI_MODE_NIGHT_NO -> {
             activity.window.statusBarColor =
@@ -49,18 +76,19 @@ fun Context.changeColorStatusBar(activity: Activity, lightColor : Int, nightColo
 }
 
 @RequiresApi(Build.VERSION_CODES.R)
-fun Activity.setLightStatusBar(){
+fun Activity.setLightStatusBar() {
     this.window.decorView.windowInsetsController?.setSystemBarsAppearance(
-        APPEARANCE_LIGHT_STATUS_BARS, APPEARANCE_LIGHT_STATUS_BARS)
+        APPEARANCE_LIGHT_STATUS_BARS, APPEARANCE_LIGHT_STATUS_BARS
+    )
 
 }
 
-fun Context.changeColorStatusBar(activity: Activity, color : Int) {
+fun Context.changeColorStatusBar(activity: Activity, color: Int) {
     activity.window.statusBarColor =
         ContextCompat.getColor(activity, color)
 }
 
-fun Context.showConfirmDialog(message:String, title: String, accept: () -> Unit){
+fun Context.showConfirmDialog(message: String, title: String, accept: () -> Unit) {
     MaterialAlertDialogBuilder(this).setMessage(message)
         .setTitle(title)
         .setPositiveButton(resources.getString(R.string.accept)) { _, _ ->
@@ -69,7 +97,16 @@ fun Context.showConfirmDialog(message:String, title: String, accept: () -> Unit)
         .show()
 }
 
-fun Context.showConfirmDialog(message:String, accept:()->Unit, decline:()->Unit){
+fun Context.showConfirmDialog(message: String, title: String) {
+    MaterialAlertDialogBuilder(this).setMessage(message)
+        .setTitle(title)
+        .setPositiveButton(resources.getString(R.string.accept)) { _, _ ->
+            {  }
+        }
+        .show()
+}
+
+fun Context.showConfirmDialog(message: String, accept: () -> Unit, decline: () -> Unit) {
     MaterialAlertDialogBuilder(this).setMessage(message)
         .setNegativeButton(resources.getString(R.string.decline)) { _, _ ->
             decline()
@@ -80,7 +117,12 @@ fun Context.showConfirmDialog(message:String, accept:()->Unit, decline:()->Unit)
         .show()
 }
 
-fun Context.showConfirmDialog(message:String, title: String, accept:()->Unit, decline:()->Unit){
+fun Context.showConfirmDialog(
+    message: String,
+    title: String,
+    accept: () -> Unit,
+    decline: () -> Unit
+) {
     MaterialAlertDialogBuilder(this).setMessage(message)
         .setTitle(title)
         .setNegativeButton(resources.getString(R.string.decline)) { _, _ ->
@@ -108,6 +150,7 @@ fun Activity.showLongSnackBar(viewId: Int, message: Int, color: Int) {
     ).setBackgroundTint(color).show()
 
 }
+
 fun Activity.showLongSnackBar(view: View, message: String, color: Int) {
     Snackbar.make(
         view,
@@ -139,7 +182,8 @@ fun loadImage(context: Context, imageUri: Uri, maxImageDimension: Int): Bitmap? 
         opts = BitmapFactory.Options()
         opts.inSampleSize = inSampleSize
         inputStreamForImage = context.contentResolver.openInputStream(imageUri)
-        val decodedBitmap = BitmapFactory.decodeStream(inputStreamForImage, null, opts)/* outPadding= */
+        val decodedBitmap =
+            BitmapFactory.decodeStream(inputStreamForImage, null, opts)/* outPadding= */
         return maybeTransformBitmap(
             context.contentResolver,
             imageUri,
