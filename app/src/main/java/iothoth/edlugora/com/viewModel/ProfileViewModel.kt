@@ -34,19 +34,7 @@ class ProfileViewModel(
     //endregion
 
     //region Get user and gadgets information
-    fun gadget(id: Int): LiveData<Gadget> {
-        return if (id>0){
-            viewModelScope.launch {
-                getGadget.invoke(id).collect {
-                    _gadget.value = it
-                }
-            }
-            _gadget
-        } else {
-            MutableLiveData(_gadget.emptyGadget())
-        }
-
-    }
+    fun gadget(id: Int): LiveData<Gadget> = getGadget.invoke(id).asLiveData()
 
     fun getUser(activity: Activity): LiveData<User?> = MutableLiveData(getUserInfo.invoke(activity))
 

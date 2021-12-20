@@ -26,6 +26,9 @@
             app:destination="@id/gadgetsListFragment"
             app:popUpTo="@id/gadgetsListFragment"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_controlViewFragment_to_detectNetworkFragment"
+            app:destination="@id/detectNetworkFragment" />
     </fragment>
     <fragment
         android:id="@+id/profileViewFragment"
@@ -73,5 +76,10 @@
     <fragment
         android:id="@+id/detectNetworkFragment"
         android:name="iothoth.edlugora.com.ui.DetectNetworkFragment"
-        android:label="DetectNetworkFragment" />
+        android:label="DetectNetworkFragment" >
+        <argument
+            android:name="gadget_id"
+            app:argType="integer"
+            android:defaultValue="0" />
+    </fragment>
 </navigation>

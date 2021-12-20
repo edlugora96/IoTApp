@@ -53,13 +53,13 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                 activity = this
             ).value?.firstStep == true
         ) {
-            navGraph.startDestination = R.id.detectNetworkFragment
+            navGraph.startDestination = R.id.profileViewFragment
         } else if (_userInfo?.lastGadgetAdded != null) {
             if(_userInfo!!.lastGadgetAdded > 0 && _userInfo!!.lastGadgetAdded > 2){
-                navGraph.startDestination = R.id.detectNetworkFragment
+                navGraph.startDestination = R.id.gadgetsListFragment
             }
         } else {
-            navGraph.startDestination = R.id.detectNetworkFragment
+            navGraph.startDestination = R.id.gadgetsListFragment
         }
 
         navController.graph = navGraph

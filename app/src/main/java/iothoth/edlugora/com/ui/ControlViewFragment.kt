@@ -129,14 +129,17 @@ class ControlViewFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        bind()
         viewModel.checkFirstStep(requireActivity())
         viewModel.events.observe(viewLifecycleOwner, Observer(this::validateEvents))
-        fillUserAndGadget()
+        _gadgetId = navigationArg.gadgetId
+        _userObserver = viewModel.getUser(requireActivity())
+        _gadgetObserver = viewModel.gadget(_gadgetId)
+        bind()
+        //fillUserAndGadget()
     }
 
     //region Methods
-    private fun fillUserAndGadget() {
+    /*private fun fillUserAndGadget() {
         _userObserver = viewModel.getUser(requireActivity())
         _userObserver.observe(viewLifecycleOwner) {
             _user.value = it
@@ -154,10 +157,10 @@ class ControlViewFragment : Fragment() {
         }
 
 
-    }
+    }*/
 
     fun action(act: Char) {
-        gadget.value.let {
+        _gadgetObserver.value.let {
             if (it != null) {
                 viewModel.gadgetDoAction(it.ipAddress, "/action", RequestApi(data = act.toString()))
             }
@@ -171,10 +174,10 @@ class ControlViewFragment : Fragment() {
             it.lifecycleOwner = viewLifecycleOwner
         }
 
-        gadget.observe(viewLifecycleOwner) {
+        _gadgetObserver.observe(viewLifecycleOwner) {
             binding.navBar.gadgetName.text = it?.name ?: ""
         }
-        user.observe(viewLifecycleOwner) {
+        _userObserver.observe(viewLifecycleOwner) {
             binding.navBar.profileName.text = it?.name ?: ""
         }
         binding.navBar.gadgetName.setOnClickListener { goToProfileView() }
@@ -195,9 +198,10 @@ class ControlViewFragment : Fragment() {
             val save = dialogGadgetProfile.findViewById<LinearLayout>(R.id.save_gadget)
             val wifi = dialogGadgetProfile.findViewById<TextView>(R.id.wifi_ssid)
             val delete = dialogGadgetProfile.findViewById<LinearLayout>(R.id.delete_gadget)
+            val syncWifi = dialogGadgetProfile.findViewById<LinearLayout>(R.id.wifi_gadget)
 
-            gadgetNameInput?.setText(gadget.value?.name.toString())
-            wifi?.text = gadget.value?.wifiOwnership
+            gadgetNameInput?.setText(_gadgetObserver.value?.name.toString())
+            wifi?.text = _gadgetObserver.value?.wifiOwnership
             save?.setOnClickListener {
                 lifecycleScope.launch {
                     viewModel.updateGadget(getInputsValueForGadget(gadgetNameInput?.text.toString()))
@@ -222,10 +226,14 @@ class ControlViewFragment : Fragment() {
 
             delete?.setOnClickListener {
                 requireContext().showConfirmDialog(
-                    getString(R.string.delete_gadget_message, gadget.value?.name.toString()),
+                    getString(R.string.delete_gadget_message, _gadgetObserver.value?.name.toString()),
                     getString(R.string.attention),
                     ::acceptDeleteGadget
                 )
+            }
+            syncWifi?.setOnClickListener{
+                dialogGadgetProfile.onBackPressed()
+                goToSyncWifiView()
             }
             dialogGadgetProfile.show()
         }
@@ -233,10 +241,17 @@ class ControlViewFragment : Fragment() {
 
 
     private fun getInputsValueForGadget(name: String): Gadget =
-        gadget.value!!.copy(id = gadget.value!!.id, name = name)
+        _gadgetObserver.value!!.copy(id = _gadgetObserver.value!!.id, name = name)
 
     private fun goToProfileView() {
         val action = ControlViewFragmentDirections.actionControlViewFragmentToProfileViewFragment(
+            _gadgetId
+        )
+        findNavController().navigate(action)
+    }
+
+    private fun goToSyncWifiView() {
+        val action = ControlViewFragmentDirections.actionControlViewFragmentToDetectNetworkFragment(
             _gadgetId
         )
         findNavController().navigate(action)

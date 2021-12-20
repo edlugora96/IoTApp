@@ -1,17 +1,18 @@
 package iothoth.edlugora.com.viewModel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import iothoth.edlugora.com.viewModel.utils.Event
+import iothoth.edlugora.domain.Gadget
 import iothoth.edlugora.domain.RequestApi
 import iothoth.edlugora.usecases.*
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 class DetectNetworkViewModel(
     private val triggerGadgetAction: TriggerGadgetAction,
     private val testGadgetConnection: TestGadgetConnection,
+    private val getGadget: GetGadget,
+    private val updateGadget: UpdateGadget,
 ) : ViewModel() {
 
     private val _loading = MutableLiveData<Boolean>(false)
@@ -25,6 +26,14 @@ class DetectNetworkViewModel(
         data class ShowErrorSnackBar(val message: String) : UiReactions()
         data class ShowWarningSnackBar(val message: String) : UiReactions()
     }
+
+    fun gadget(id: Int): LiveData<Gadget> = getGadget.invoke(id).asLiveData()
+
+    fun updateGadget(gadget: Gadget): Job {
+        return viewModelScope.launch { updateGadget.invoke(gadget) }
+
+    }
+
 
     fun testConnection(baseUrl: String, url: String) {
         viewModelScope.launch {
