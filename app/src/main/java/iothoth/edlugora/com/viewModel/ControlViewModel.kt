@@ -25,8 +25,10 @@ class ControlViewModel(
     private val getUserInfo: GetUserInfo,
     private val getGadget: GetGadget,
     private val updateGadget: UpdateGadget,
-    private val deleteGadget: DeleteGadget
-) : ViewModel() {
+    private val deleteGadget: DeleteGadget,
+    private val countAllGadgets: CountAllGadgets,
+
+    ) : ViewModel() {
     //region Utils declarations
     private val _loading = MutableLiveData<Boolean>(false)
     val loading: LiveData<Boolean> = _loading
@@ -47,7 +49,7 @@ class ControlViewModel(
     //region Get gadget and user information
     fun gadget(id: Int): LiveData<Gadget> = getGadget.invoke(id).asLiveData()
 
-    fun getUser(activity: Activity): LiveData<User?> = MutableLiveData(getUserInfo.invoke(activity))
+    fun getUser(activity: Activity): LiveData<User> = MutableLiveData(getUserInfo.invoke(activity))
 
     fun deleteGadget(gadget: Gadget) {
         viewModelScope.launch { deleteGadget.invoke(gadget) }
@@ -56,6 +58,8 @@ class ControlViewModel(
 
 
     //region Control handler
+    val countOfAllGadgets = countAllGadgets.invoke().asLiveData()
+
     suspend fun testConnection(baseUrl: String, url: String) {
         testGadgetConnection.invoke(baseUrl, url)
 

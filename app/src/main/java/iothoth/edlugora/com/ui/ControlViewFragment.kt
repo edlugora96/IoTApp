@@ -1,32 +1,23 @@
 package iothoth.edlugora.com.ui
 
-import android.content.res.Configuration
 import android.net.*
-import android.os.Build
 import android.os.Bundle
-import android.text.Editable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AutoCompleteTextView
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat.getColor
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.*
 import androidx.lifecycle.Observer
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.textfield.TextInputEditText
 import iothoth.edlugora.com.IoThothApplication
 import iothoth.edlugora.com.R
-import iothoth.edlugora.com.databinding.DialogGadgetProfileBinding
 import iothoth.edlugora.com.databinding.FragmentControlViewBinding
 import iothoth.edlugora.com.utils.changeColorStatusBar
 import iothoth.edlugora.com.utils.showConfirmDialog
@@ -51,21 +42,22 @@ import iothoth.edlugora.userpreferencesmanager.UserInfo
 import iothoth.edlugora.userpreferencesmanager.UserInfoDataSource
 import kotlinx.coroutines.launch
 import java.util.*
+import kotlin.concurrent.schedule
 
 class ControlViewFragment : Fragment() {
     private lateinit var binding: FragmentControlViewBinding
     private val navigationArg: ControlViewFragmentArgs by navArgs()
 
-    private var _gadgetId: Int = 0
+    private var gadgetId: Int = 0
 
-    private val _user: MutableLiveData<User> = MutableLiveData()
+    /*private val _user: MutableLiveData<User> = MutableLiveData()
     val user: LiveData<User> = _user
 
     private val _gadget: MutableLiveData<Gadget> = MutableLiveData()
-    val gadget: LiveData<Gadget> = _gadget
+    val gadget: LiveData<Gadget> = _gadget*/
 
-    private var _gadgetObserver: LiveData<Gadget> = MutableLiveData()
-    private var _userObserver: LiveData<User?> = MutableLiveData()
+    private var gadgetObserver: LiveData<Gadget> = MutableLiveData()
+    private var _userObserver: LiveData<User> = MutableLiveData()
 
     //region ViewModel Declaration
     private val database: GadgetsRoomDatabase by lazy {
@@ -101,6 +93,9 @@ class ControlViewFragment : Fragment() {
     private val deleteGadget by lazy {
         DeleteGadget(gadgetRepository)
     }
+    private val countAllGadgets by lazy {
+        CountAllGadgets(gadgetRepository)
+    }
     private val viewModel: ControlViewModel by lazy {
         ControlViewModel(
             triggerGadgetAction,
@@ -108,7 +103,8 @@ class ControlViewFragment : Fragment() {
             getUserInfo,
             getGadget,
             updateGadget,
-            deleteGadget
+            deleteGadget,
+            countAllGadgets
         )
     }
     //endregion
@@ -131,36 +127,18 @@ class ControlViewFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         viewModel.checkFirstStep(requireActivity())
         viewModel.events.observe(viewLifecycleOwner, Observer(this::validateEvents))
-        _gadgetId = navigationArg.gadgetId
+        gadgetId = navigationArg.gadgetId
+
         _userObserver = viewModel.getUser(requireActivity())
-        _gadgetObserver = viewModel.gadget(_gadgetId)
+        gadgetObserver = viewModel.gadget(gadgetId)
         bind()
         //fillUserAndGadget()
     }
 
     //region Methods
-    /*private fun fillUserAndGadget() {
-        _userObserver = viewModel.getUser(requireActivity())
-        _userObserver.observe(viewLifecycleOwner) {
-            _user.value = it
-
-            _gadgetId = if (navigationArg.gadgetId > 0) {
-                navigationArg.gadgetId
-            } else {
-                it?.lastGadgetAdded ?: 0
-            }
-            _gadgetObserver = viewModel.gadget(_gadgetId)
-        }
-
-        _gadgetObserver.observe(viewLifecycleOwner) { gadgetRequest ->
-            _gadget.value = gadgetRequest
-        }
-
-
-    }*/
 
     fun action(act: Char) {
-        _gadgetObserver.value.let {
+        gadgetObserver.value.let {
             if (it != null) {
                 viewModel.gadgetDoAction(it.ipAddress, "/action", RequestApi(data = act.toString()))
             }
@@ -174,16 +152,38 @@ class ControlViewFragment : Fragment() {
             it.lifecycleOwner = viewLifecycleOwner
         }
 
-        _gadgetObserver.observe(viewLifecycleOwner) {
-            binding.navBar.gadgetName.text = it?.name ?: ""
-        }
-        _userObserver.observe(viewLifecycleOwner) {
+
+        //binding.navBar.gadgetName.text = _gadgetObserver.value?.name ?: ""
+        /*_gadgetObserver.observe(viewLifecycleOwner) {
+            binding.navBar.gadgetName.text = it.name
+            if (it != null) {
+                _gadgetObserver.removeObservers(viewLifecycleOwner)
+            }
+        }*/
+
+        /*_userObserver.observe(viewLifecycleOwner) {
             binding.navBar.profileName.text = it?.name ?: ""
-        }
-        binding.navBar.gadgetName.setOnClickListener { goToProfileView() }
+        }*/
+        /*gadgetObserver.observe(viewLifecycleOwner) {
+            binding.gadgetName.text = it.name
+        }*/
+        /*gadgetObserver.observe(viewLifecycleOwner, Observer{
+        })*/
+        /*binding.gadgetName.text = gadgetObserver.value?.name
+        lifecycleScope.launch {
+            Timer().schedule(500) {
+                lifecycleScope.launch {
+                    binding.gadgetName.text = gadgetObserver.value?.name
+                }
+            }
+        }*/
+        //binding.gadgetName.text = gadgetObserver.distinctUntilChanged().value?.name
+
+        /*binding.navBar.gadgetName.setOnClickListener { goToProfileView() }
         binding.navBar.profileName.setOnClickListener { goToProfileView() }
-        binding.navBar.profilePhotoCard.setOnClickListener { goToProfileView() }
-        binding.navBar.menuIcon.setOnClickListener {
+        binding.navBar.profilePhotoCard.setOnClickListener { goToProfileView() }*/
+        binding.cancel.setOnClickListener { goToListGadget() }
+        binding.cogMenu.setOnClickListener {
             it.isClickable = false
             val dialogGadgetProfile = BottomSheetDialog(requireContext())
 
@@ -200,8 +200,8 @@ class ControlViewFragment : Fragment() {
             val delete = dialogGadgetProfile.findViewById<LinearLayout>(R.id.delete_gadget)
             val syncWifi = dialogGadgetProfile.findViewById<LinearLayout>(R.id.wifi_gadget)
 
-            gadgetNameInput?.setText(_gadgetObserver.value?.name.toString())
-            wifi?.text = _gadgetObserver.value?.wifiOwnership
+            gadgetNameInput?.setText(gadgetObserver.value?.name ?: "")
+            wifi?.text = gadgetObserver.value?.wifiOwnership
             save?.setOnClickListener {
                 lifecycleScope.launch {
                     viewModel.updateGadget(getInputsValueForGadget(gadgetNameInput?.text.toString()))
@@ -212,26 +212,31 @@ class ControlViewFragment : Fragment() {
             }
 
             fun acceptDeleteGadget() {
-                _gadgetObserver.removeObservers(viewLifecycleOwner)
+                //_gadgetObserver.removeObservers(viewLifecycleOwner)
+                //_gadgetObserver.value = MutableLiveData<Gadget>().emptyGadget()
                 lifecycleScope.launch {
                     viewModel.deleteGadget(
                         MutableLiveData<Gadget>().emptyGadget().copy(
-                            id = _gadgetId
+                            id = gadgetId
                         )
                     )
-                    findNavController().navigateUp()
+                    goToListGadget()
+                    //findNavController().navigateUp()
                     dialogGadgetProfile.onBackPressed()
                 }
             }
 
             delete?.setOnClickListener {
                 requireContext().showConfirmDialog(
-                    getString(R.string.delete_gadget_message, _gadgetObserver.value?.name.toString()),
+                    getString(
+                        R.string.delete_gadget_message,
+                        gadgetObserver.value?.name.toString()
+                    ),
                     getString(R.string.attention),
                     ::acceptDeleteGadget
                 )
             }
-            syncWifi?.setOnClickListener{
+            syncWifi?.setOnClickListener {
                 dialogGadgetProfile.onBackPressed()
                 goToSyncWifiView()
             }
@@ -241,18 +246,24 @@ class ControlViewFragment : Fragment() {
 
 
     private fun getInputsValueForGadget(name: String): Gadget =
-        _gadgetObserver.value!!.copy(id = _gadgetObserver.value!!.id, name = name)
+        gadgetObserver.value?.copy(id = gadgetObserver.value!!.id, name = name)
+            ?: MutableLiveData<Gadget>().emptyGadget()
 
     private fun goToProfileView() {
         val action = ControlViewFragmentDirections.actionControlViewFragmentToProfileViewFragment(
-            _gadgetId
+            gadgetId
         )
+        findNavController().navigate(action)
+    }
+
+    private fun goToListGadget() {
+        val action = ControlViewFragmentDirections.actionControlViewFragmentToGadgetsListFragment()
         findNavController().navigate(action)
     }
 
     private fun goToSyncWifiView() {
         val action = ControlViewFragmentDirections.actionControlViewFragmentToDetectNetworkFragment(
-            _gadgetId
+            gadgetId
         )
         findNavController().navigate(action)
     }
@@ -289,4 +300,5 @@ class ControlViewFragment : Fragment() {
     }
     //endregion
 }
+
 

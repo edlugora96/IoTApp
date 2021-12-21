@@ -21,6 +21,8 @@ class GadgetsListViewModel(
     private val getUserInfo: GetUserInfo,
     private val getAllGadgets: GetAllGadgets,
     private val deleteGadget: DeleteGadget,
+    private val countAllGadgets: CountAllGadgets,
+    private val getOneGadget: GetOneGadget
 ) : ViewModel() {
     //region Utils declarations
     private val _loading = MutableLiveData<Boolean>(false)
@@ -65,10 +67,14 @@ class GadgetsListViewModel(
         }
         _gadgets
     }*/
-
+    val countOfAllGadgets = countAllGadgets.invoke().asLiveData()
     val allGadget = getAllGadgets.invoke().asLiveData()
+    val getFirstGadget = getOneGadget.invoke().asLiveData()
 
     fun getUser(activity: Activity): LiveData<User?> = MutableLiveData(getUserInfo.invoke(activity))
+    fun deleteGadget(gadget: Gadget) {
+        viewModelScope.launch { deleteGadget.invoke(gadget) }
+    }
     //endregion
 
     fun checkFirstStep(activity: Activity) {

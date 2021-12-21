@@ -44,6 +44,12 @@
             android:name="gadgat_id"
             app:argType="integer"
             android:defaultValue="0" />
+        <action
+            android:id="@+id/action_profileViewFragment_to_gadgetsListFragment"
+            app:destination="@id/gadgetsListFragment" />
+        <action
+            android:id="@+id/action_profileViewFragment_to_insertGadgetFragment"
+            app:destination="@id/insertGadgetFragment" />
     </fragment>
     <fragment
         android:id="@+id/gadgetsListFragment"
@@ -55,9 +61,6 @@
         <action
             android:id="@+id/action_gadgetsListFragment_to_insertGadgetFragment"
             app:destination="@id/insertGadgetFragment" />
-        <argument
-            android:name="gadget_id"
-            app:argType="integer" />
         <action
             android:id="@+id/action_gadgetsListFragment_to_detectNetworkFragment"
             app:destination="@id/detectNetworkFragment" />
@@ -72,6 +75,9 @@
         <action
             android:id="@+id/action_insertGadgetFragment_to_detectNetworkFragment"
             app:destination="@id/detectNetworkFragment" />
+        <action
+            android:id="@+id/action_insertGadgetFragment_to_gadgetsListFragment"
+            app:destination="@id/gadgetsListFragment" />
     </fragment>
     <fragment
         android:id="@+id/detectNetworkFragment"
@@ -81,5 +87,19 @@
             android:name="gadget_id"
             app:argType="integer"
             android:defaultValue="0" />
+    </fragment>
+    <fragment
+        android:id="@+id/firstStepFragment"
+        android:name="iothoth.edlugora.com.ui.FirstStepFragment"
+        android:label="FirstStepFragment" >
+        <action
+            android:id="@+id/action_firstStepFragment_to_controlViewFragment"
+            app:destination="@id/controlViewFragment" />
+        <action
+            android:id="@+id/action_firstStepFragment_to_gadgetsListFragment"
+            app:destination="@id/gadgetsListFragment" />
+        <action
+            android:id="@+id/action_firstStepFragment_to_insertGadgetFragment"
+            app:destination="@id/insertGadgetFragment" />
     </fragment>
 </navigation>

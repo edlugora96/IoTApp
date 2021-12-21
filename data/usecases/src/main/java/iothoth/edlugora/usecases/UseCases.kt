@@ -41,6 +41,18 @@ class GetAllGadgets(
     fun invoke(): Flow<List<Gadget>> = gadgetRepository.getAllGadgets()
 }
 
+class CountAllGadgets(
+    private val gadgetRepository: GadgetRepository
+) {
+    fun invoke(): Flow<Int> = gadgetRepository.countAllGadgets()
+}
+
+class GetOneGadget(
+    private val gadgetRepository: GadgetRepository
+){
+    fun invoke(): Flow<Gadget> = gadgetRepository.getOneGadget()
+}
+
 class TriggerGadgetAction(
     private val gadgetRepository: GadgetRepository
 ) {

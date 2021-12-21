@@ -26,8 +26,15 @@ class GadgetRoomDataSource(
     override fun getGadget(id: Int): Flow<Gadget> =
         gadgetsDao.getGadget(id).map(GadgetsEntity::toGadgetDomain)
 
-
     override fun getAllGadgets(): Flow<List<Gadget>> =
         gadgetsDao.getAllGadgets().map(List<GadgetsEntity>::toGadgetDomainList)
+
+    override fun countAllGadgets(): Flow<Int> =
+        gadgetsDao.countAllGadgets()
+
+    override fun getOneGadget(): Flow<Gadget> =
+        gadgetsDao.getOneGadget().map(GadgetsEntity::toGadgetDomain)
+
+
 }
 

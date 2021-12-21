@@ -75,9 +75,14 @@ class GadgetsListFragment : Fragment() {
     private val getAllGadgets by lazy {
         GetAllGadgets(gadgetRepository)
     }
-
     private val deleteGadget by lazy {
         DeleteGadget(gadgetRepository)
+    }
+    private val countAllGadgets by lazy {
+        CountAllGadgets(gadgetRepository)
+    }
+    private val getOneGadget by lazy {
+        GetOneGadget(gadgetRepository)
     }
 
     private val viewModel: GadgetsListViewModel by lazy {
@@ -88,7 +93,9 @@ class GadgetsListFragment : Fragment() {
             updateUserInfo,
             getUserInfo,
             getAllGadgets,
-            deleteGadget
+            deleteGadget,
+            countAllGadgets,
+            getOneGadget
         )
     }
     //endregion
@@ -105,11 +112,26 @@ class GadgetsListFragment : Fragment() {
         )
         binding =
             DataBindingUtil.inflate(inflater, R.layout.fragment_gadgets_list, container, false)
+        viewModel.countOfAllGadgets.observe(viewLifecycleOwner) {
+            if (it == 1) {
+                viewModel.getFirstGadget.observe(viewLifecycleOwner) { gadget ->
+                    if (gadget != null) {
+                        val action =
+                            GadgetsListFragmentDirections.actionGadgetsListFragmentToControlViewFragment(
+                                gadget.id,
+                                gadget.type.toString()
+                            )
+                        findNavController().navigate(action)
+                    }
+                }
+            }
+        }
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         val adapter = GadgetAdapter {
             val action =
                 GadgetsListFragmentDirections.actionGadgetsListFragmentToControlViewFragment(
@@ -121,7 +143,7 @@ class GadgetsListFragment : Fragment() {
         binding.recycleGadget.adapter = adapter
         viewModel.allGadget.observe(viewLifecycleOwner) { gadget ->
             gadget.let {
-                if (it!=null){
+                if (it != null) {
                     adapter.submitList(it)
                 }
             }
@@ -130,6 +152,7 @@ class GadgetsListFragment : Fragment() {
         viewModel.checkFirstStep(requireActivity())
         viewModel.events.observe(viewLifecycleOwner, Observer(this::validateEvents))
         fillUserAndGadget()
+
     }
 
     //region Methods
@@ -140,9 +163,9 @@ class GadgetsListFragment : Fragment() {
             it.lifecycleOwner = viewLifecycleOwner
         }
 
-        binding.navBar.profilePhotoCard.setOnClickListener {
+        /*binding.navBar.profilePhotoCard.setOnClickListener {
             goToDetectNetworkView()
-        }
+        }*/
     }
 
     private fun fillUserAndGadget() {
@@ -155,10 +178,10 @@ class GadgetsListFragment : Fragment() {
         }
     }
 
-    private fun goToDetectNetworkView() {
+    /*private fun goToDetectNetworkView() {
         val action = GadgetsListFragmentDirections.actionGadgetsListFragmentToDetectNetworkFragment()
         findNavController().navigate(action)
-    }
+    }*/
 
     fun goToInsertGadget() {
         val action = GadgetsListFragmentDirections.actionGadgetsListFragmentToInsertGadgetFragment()
@@ -189,7 +212,7 @@ class GadgetsListFragment : Fragment() {
                         ContextCompat.getColor(requireContext(), R.color.warning)
                     )
                 }
-                else -> goToDetectNetworkView()
+                else -> {}//goToDetectNetworkView()
             }
 
         }

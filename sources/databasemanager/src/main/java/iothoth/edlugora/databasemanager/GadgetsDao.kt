@@ -19,4 +19,10 @@ interface GadgetsDao {
 
     @Query("SELECT * from gadgets")
     fun getAllGadgets(): Flow<List<GadgetsEntity>>
+
+    @Query("SELECT count(*) FROM gadgets")
+    fun countAllGadgets(): Flow<Int>
+
+    @Query("SELECT * FROM gadgets LIMIT 1")
+    fun getOneGadget(): Flow<GadgetsEntity>
 }

@@ -21,4 +21,6 @@ interface LocalGadgetDataSource {
     suspend fun deleteGadget(gadget: Gadget)
     fun getGadget(id: Int): Flow<Gadget>
     fun getAllGadgets(): Flow<List<Gadget>>
+    fun countAllGadgets(): Flow<Int>
+    fun getOneGadget(): Flow<Gadget>
 }

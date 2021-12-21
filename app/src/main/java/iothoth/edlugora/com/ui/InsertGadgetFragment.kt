@@ -242,6 +242,11 @@ class InsertGadgetFragment : Fragment() {
         isEnableBackPress = itIs
     }
 
+    private fun goToAllGadget() {
+        val action = InsertGadgetFragmentDirections.actionInsertGadgetFragmentToGadgetsListFragment()
+        findNavController().navigate(action)
+    }
+
     @RequiresApi(Build.VERSION_CODES.O)
     private fun onEvent(event: String, result: String? = null) {
         when (event) {
@@ -254,7 +259,8 @@ class InsertGadgetFragment : Fragment() {
                     clickableIcons(false)
                     lifecycleScope.launch {
                         viewModel.insertGadget(gadgetData!!).join()
-                        findNavController().popBackStack()
+                        goToAllGadget()
+                        //findNavController().popBackStack()
                     }
                 } catch (ex: Exception) {
                     requireContext().showLongToast(R.string.error_qr_message)

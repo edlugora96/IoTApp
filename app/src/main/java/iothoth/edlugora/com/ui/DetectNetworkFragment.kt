@@ -1,8 +1,10 @@
 package iothoth.edlugora.com.ui
 
 import android.Manifest
-import android.content.*
-import android.net.*
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.net.ConnectivityManager
 import android.net.wifi.ScanResult
 import android.net.wifi.WifiManager
 import android.os.Build
@@ -15,7 +17,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
-import androidx.databinding.Observable
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -35,7 +36,6 @@ import iothoth.edlugora.com.utils.showLongToast
 import iothoth.edlugora.com.viewModel.DetectNetworkViewModel
 import iothoth.edlugora.com.viewModel.DetectNetworkViewModel.UiReactions
 import iothoth.edlugora.com.viewModel.DetectNetworkViewModel.UiReactions.*
-import iothoth.edlugora.com.viewModel.GadgetsListViewModel
 import iothoth.edlugora.com.viewModel.utils.Event
 import iothoth.edlugora.databasemanager.GadgetRoomDataSource
 import iothoth.edlugora.databasemanager.GadgetsRoomDatabase
@@ -47,7 +47,10 @@ import iothoth.edlugora.myapplication.WifiHandler
 import iothoth.edlugora.networkmanager.GadgetApiDataSource
 import iothoth.edlugora.networkmanager.GadgetRequest
 import iothoth.edlugora.repository.GadgetRepository
-import iothoth.edlugora.usecases.*
+import iothoth.edlugora.usecases.GetGadget
+import iothoth.edlugora.usecases.TestGadgetConnection
+import iothoth.edlugora.usecases.TriggerGadgetAction
+import iothoth.edlugora.usecases.UpdateGadget
 import kotlinx.coroutines.launch
 import java.util.*
 import kotlin.concurrent.schedule
@@ -72,13 +75,15 @@ class DetectNetworkFragment : Fragment() {
 
 
     @RequiresApi(Build.VERSION_CODES.Q)
-    private fun requestPermissions(callback: () -> Unit) =
+    private fun requestPermissions(callback: () -> Unit) = lifecycleScope.launch {
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { isGranted ->
             val permissionsGranted = isGranted.all { it.value == true }
             if (permissionsGranted) {
                 callback()
             }
         }.launch(PERMISSIONS)
+
+    }
 
 
     //region ViewModel Declaration
@@ -126,7 +131,13 @@ class DetectNetworkFragment : Fragment() {
             R.layout.fragment_detect_network, container, false
         )
         _gadgetObserver = viewModel.gadget(navigationArg.gadgetId)
-        // Inflate the layout for this fragment
+
+        permissionHandler = PermissionHandler(
+            context = requireContext(),
+            requestPermissions = this::requestPermissions,
+            PERMISSIONS = PERMISSIONS
+        )
+
         return binding.root
     }
 
@@ -147,11 +158,7 @@ class DetectNetworkFragment : Fragment() {
             scanSuccess = this::scanResult
         )
 
-        permissionHandler = PermissionHandler(
-            context = requireContext(),
-            requestPermissions = this::requestPermissions,
-            PERMISSIONS = PERMISSIONS
-        )
+
 
 
         //connectivityManager.registerDefaultNetworkCallback(wifiHandler.netWorkCallback)
@@ -218,7 +225,7 @@ class DetectNetworkFragment : Fragment() {
                         2 -> wifiScan.value = emptyList()
                     }
                 }
-                permissionHandler.ifPermissionsAreGranted { wifiHandler.startScanWifi() }
+                //permissionHandler.ifPermissionsAreGranted { wifiHandler.startScanWifi() }
                 if (actualSsid().matches(it.ssid.toRegex())) {
                     _syncState.value = 1
                 }
