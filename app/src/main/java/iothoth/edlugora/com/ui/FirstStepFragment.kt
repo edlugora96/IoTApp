@@ -1,30 +1,20 @@
 package iothoth.edlugora.com.ui
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import iothoth.edlugora.com.IoThothApplication
 import iothoth.edlugora.com.R
-import iothoth.edlugora.com.databinding.FragmentDetectNetworkBinding
 import iothoth.edlugora.com.databinding.FragmentFirstStepBinding
 import iothoth.edlugora.com.utils.showLongToast
 import iothoth.edlugora.com.viewModel.FirstStepViewModel
-import iothoth.edlugora.com.viewModel.ProfileViewModel
-import iothoth.edlugora.databasemanager.GadgetRoomDataSource
-import iothoth.edlugora.databasemanager.GadgetsRoomDatabase
-import iothoth.edlugora.domain.Gadget
 import iothoth.edlugora.domain.UpdateUser
-import iothoth.edlugora.domain.repository.LocalGadgetDataSource
-import iothoth.edlugora.networkmanager.GadgetApiDataSource
-import iothoth.edlugora.networkmanager.GadgetRequest
-import iothoth.edlugora.repository.GadgetRepository
 import iothoth.edlugora.repository.UserInfoRepository
 import iothoth.edlugora.usecases.*
 import iothoth.edlugora.userpreferencesmanager.UserInfo
@@ -37,9 +27,6 @@ class FirstStepFragment : Fragment() {
     var state: LiveData<Int> = _state
 
     //region ViewModel Declaration
-    private val database: GadgetsRoomDatabase by lazy {
-        (activity?.application as IoThothApplication).database
-    }
     private val userInfo = UserInfo()
     private val shareUserInfoDataSource =
         UserInfoDataSource(userInfo)

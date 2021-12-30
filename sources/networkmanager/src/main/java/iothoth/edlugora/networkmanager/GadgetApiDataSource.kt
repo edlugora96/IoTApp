@@ -19,14 +19,15 @@ class GadgetApiDataSource(
             return ResponseApi(
                 data = res.data,
                 error = res.error,
-                code = res.code.toString()
-
+                code = res.code.toString(),
+                wifi = res.wifi
             )
         } catch (ex: Exception) {
             return ResponseApi(
                 data = null,
                 error = "Device offline",
-                code = "500"
+                code = "500",
+                wifi = null
             )
         }
     }
@@ -42,14 +43,15 @@ class GadgetApiDataSource(
             return ResponseApi(
                 data = res.data,
                 error = res.error,
-                code = res.code.toString()
-
+                code = res.code.toString(),
+                wifi = null
             )
         } catch (ex: Exception) {
             return ResponseApi(
                 data = null,
                 error = "Device offline",
-                code = "500"
+                code = "500",
+                wifi = null
             )
         }
     }

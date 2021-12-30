@@ -42,7 +42,7 @@ fun Context.showLongToast(@StringRes resourceId: Int) {
     Toast.makeText(this, resourceId, Toast.LENGTH_LONG).show()
 }
 
-private fun hasPermissions(context: Context, vararg permissions: String): Boolean =
+fun hasPermissions(context: Context, vararg permissions: String): Boolean =
     permissions.all {
         ActivityCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
     }
@@ -112,6 +112,19 @@ fun Context.showConfirmDialog(message: String, accept: () -> Unit, decline: () -
             decline()
         }
         .setPositiveButton(resources.getString(R.string.accept)) { _, _ ->
+            accept()
+        }
+        .show()
+}
+
+fun Context.showConfirmDialog(title: String, message: String, acceptName: String, declineName: String, accept: () -> Unit, decline: () -> Unit) {
+    MaterialAlertDialogBuilder(this)
+        .setTitle(title)
+        .setMessage(message)
+        .setNegativeButton(declineName) { _, _ ->
+            decline()
+        }
+        .setPositiveButton(acceptName) { _, _ ->
             accept()
         }
         .show()

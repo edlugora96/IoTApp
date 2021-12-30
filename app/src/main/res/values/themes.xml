@@ -16,4 +16,13 @@
         <!-- Customize your theme here. -->
         <item name="android:buttonStyle">@style/BtnLight</item>
     </style>
+
+    <style name="Theme.IoThoth.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="Theme.IoThoth.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="Theme.IoThoth.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>

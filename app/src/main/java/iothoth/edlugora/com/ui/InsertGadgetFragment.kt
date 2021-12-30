@@ -35,7 +35,6 @@ import iothoth.edlugora.com.viewModel.InsertGadgetViewModel
 import iothoth.edlugora.com.viewModel.InsertGadgetViewModel.UiReactions
 import iothoth.edlugora.com.viewModel.InsertGadgetViewModel.UiReactions.*
 import iothoth.edlugora.com.viewModel.InsertGadgetViewModelFactory
-import iothoth.edlugora.com.viewModel.ProfileViewModel
 import iothoth.edlugora.com.viewModel.utils.Event
 import iothoth.edlugora.cryptography.CryptographyManager.decrypt
 import iothoth.edlugora.databasemanager.GadgetRoomDataSource
@@ -53,6 +52,7 @@ import iothoth.edlugora.networkmanager.GadgetRequest
 import iothoth.edlugora.repository.GadgetRepository
 import iothoth.edlugora.repository.UserInfoRepository
 import iothoth.edlugora.usecases.InsertGadget
+import iothoth.edlugora.usecases.IsGadgetAdded
 import iothoth.edlugora.usecases.UpdateGadget
 import iothoth.edlugora.usecases.UpdateUserInfo
 import iothoth.edlugora.userpreferencesmanager.UserInfo
@@ -132,12 +132,16 @@ class InsertGadgetFragment : Fragment() {
     private val updateUserInfo by lazy {
         UpdateUserInfo(userInfoRepository)
     }
+    private val isGadgetAdded by lazy {
+        IsGadgetAdded(gadgetRepository)
+    }
 
     private val viewModel: InsertGadgetViewModel by activityViewModels {
         InsertGadgetViewModelFactory(
             insertGadget,
             updateGadget,
-            updateUserInfo
+            updateUserInfo,
+            isGadgetAdded
         )
     }
     //endregion
@@ -258,7 +262,7 @@ class InsertGadgetFragment : Fragment() {
                     val gadgetData = gadgetJsonAdapter.fromJson(resultDecrypted)
                     clickableIcons(false)
                     lifecycleScope.launch {
-                        viewModel.insertGadget(gadgetData!!).join()
+                        viewModel.insertGadget(gadgetData!!)
                         goToAllGadget()
                         //findNavController().popBackStack()
                     }

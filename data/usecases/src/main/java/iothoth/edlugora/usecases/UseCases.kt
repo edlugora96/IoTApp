@@ -46,6 +46,11 @@ class CountAllGadgets(
 ) {
     fun invoke(): Flow<Int> = gadgetRepository.countAllGadgets()
 }
+class IsGadgetAdded(
+    private val gadgetRepository: GadgetRepository
+) {
+    fun invoke(uid:String): Flow<Int> = gadgetRepository.isGadgetAdded(uid)
+}
 
 class GetOneGadget(
     private val gadgetRepository: GadgetRepository

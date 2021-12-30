@@ -70,20 +70,21 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         _userInfo = viewModel.getUser(activity = this).value
 
         viewModel.countOfAllGadgets.observe(this) {
-            Log.w("isThis", "$it")
-            if (_userInfo?.firstStep == true || it <= 0) {
-                Log.i("isThis", "first")
-                navGraph.startDestination = R.id.firstStepFragment
-            } else {
-                Log.d("isThis", "list")
-                navGraph.startDestination = R.id.gadgetsListFragment
+            if (it != null) {
+                Log.w("isThis", "$it")
+                if (_userInfo?.firstStep == true || it <= 0) {
+                    Log.i("isThis", "first")
+                    navGraph.startDestination = R.id.firstStepFragment
+                } else {
+                    Log.d("isThis", "list")
+                    navGraph.startDestination = R.id.gadgetsListFragment
+                }
+
+                navController.graph = navGraph
+
+                viewModel.countOfAllGadgets.removeObservers(this)
             }
-
-            navController.graph = navGraph
         }
-
-        viewModel.countOfAllGadgets.removeObservers(this)
-
 
 
     }

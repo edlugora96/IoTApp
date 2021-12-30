@@ -71,7 +71,7 @@ class WifiHandler(
             }
 
             override fun onUnavailable() {
-                connectToANewWifiNetwork(ssid, pass, callbackOnAvailable)
+                //connectToANewWifiNetwork(ssid, pass, callbackOnAvailable)
             }
 
         }

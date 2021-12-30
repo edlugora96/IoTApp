@@ -9,10 +9,6 @@
         android:name="iothoth.edlugora.com.ui.ControlViewFragment"
         android:label="fragment_control_view"
         tools:layout="@layout/fragment_control_view">
-        <action
-            android:id="@+id/action_controlViewFragment_to_profileViewFragment"
-            app:destination="@id/profileViewFragment" >
-        </action>
         <argument
             android:name="gadget_id"
             app:argType="integer"
@@ -29,27 +25,6 @@
         <action
             android:id="@+id/action_controlViewFragment_to_detectNetworkFragment"
             app:destination="@id/detectNetworkFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/profileViewFragment"
-        android:name="iothoth.edlugora.com.ui.ProfileViewFragment"
-        android:label="fragment_profile_view"
-        tools:layout="@layout/fragment_profile_view">
-        <action
-            android:id="@+id/action_profileViewFragment_to_controlViewFragment"
-            app:destination="@id/controlViewFragment"
-            app:popUpTo="@id/controlViewFragment" >
-        </action>
-        <argument
-            android:name="gadgat_id"
-            app:argType="integer"
-            android:defaultValue="0" />
-        <action
-            android:id="@+id/action_profileViewFragment_to_gadgetsListFragment"
-            app:destination="@id/gadgetsListFragment" />
-        <action
-            android:id="@+id/action_profileViewFragment_to_insertGadgetFragment"
-            app:destination="@id/insertGadgetFragment" />
     </fragment>
     <fragment
         android:id="@+id/gadgetsListFragment"

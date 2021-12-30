@@ -5,6 +5,16 @@
 
     <data>
 
+        <import type="android.view.View" />
+
+        <variable
+            name="viewModel"
+            type="iothoth.edlugora.com.viewModel.DetectNetworkViewModel" />
+
+        <variable
+            name="codeBehind"
+            type="iothoth.edlugora.com.ui.DetectNetworkFragment" />
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -12,10 +22,16 @@
         android:layout_height="match_parent"
         tools:context=".ui.DetectNetworkFragment">
 
+        <TextView
+            android:id="@+id/flag"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/nav_bar"
+            tools:text="Oye mi amor" />
 
         <include
             android:id="@+id/nav_bar"
-            layout="@layout/navbar_profile"
+            layout="@layout/navbar_full_screen"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -24,6 +40,7 @@
             android:id="@+id/scrollView2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:visibility="@{codeBehind.syncState == 1 ? View.VISIBLE : View.GONE}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/nav_bar">
 
@@ -39,6 +56,110 @@
                 app:layout_constraintTop_toBottomOf="@+id/nav_bar"
                 tools:listitem="@layout/item_wifi_scanner" />
         </ScrollView>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:visibility="@{codeBehind.syncState &lt; 0 ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/nav_bar">
+
+            <ProgressBar
+                android:id="@+id/progressBarPre"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/blue"
+                android:backgroundTintMode="@color/blue"
+                android:foregroundTint="@color/blue"
+                android:indeterminateTint="@color/blue"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:visibility="@{codeBehind.syncState == 0 ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/nav_bar">
+
+            <TextView
+                android:id="@+id/textView6"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginEnd="24dp"
+                android:text="Buscando dispositivo para establecer conexión"
+                android:textAlignment="center"
+                android:textSize="34sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/start_search"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="24dp"
+                android:layout_marginBottom="24dp"
+                android:text="Iniciar Busqueda"
+                android:textColor="@color/blue"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/nav_bar"
+            android:visibility="@{codeBehind.syncState > 1 ? View.VISIBLE : View.GONE}">
+
+            <TextView
+                android:id="@+id/textView8"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginEnd="24dp"
+                android:text="Configurando la conexión Wifi en el dispositivo, comprobando credenciales "
+                android:textAlignment="center"
+                android:textSize="24sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/textView9"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="Esto va a tomar solo un minuto"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView8" />
+
+            <ProgressBar
+                android:id="@+id/progressBar2"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                android:backgroundTint="@color/blue"
+                android:backgroundTintMode="@color/blue"
+                android:foregroundTint="@color/blue"
+                android:indeterminateTint="@color/blue"
+                app:layout_constraintBottom_toTopOf="@+id/textView8"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

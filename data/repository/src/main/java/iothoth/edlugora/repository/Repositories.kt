@@ -28,6 +28,7 @@ class GadgetRepository(
     fun getGadget(id: Int): Flow<Gadget> = localGadgetDataSource.getGadget(id)
     fun getAllGadgets(): Flow<List<Gadget>> = localGadgetDataSource.getAllGadgets()
     fun countAllGadgets(): Flow<Int> = localGadgetDataSource.countAllGadgets()
+    fun isGadgetAdded(uid: String): Flow<Int> = localGadgetDataSource.isGadgetAdded(uid)
     fun getOneGadget(): Flow<Gadget> = localGadgetDataSource.getOneGadget()
 }
 

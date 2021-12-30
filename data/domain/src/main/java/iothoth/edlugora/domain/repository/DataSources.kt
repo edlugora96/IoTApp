@@ -22,5 +22,6 @@ interface LocalGadgetDataSource {
     fun getGadget(id: Int): Flow<Gadget>
     fun getAllGadgets(): Flow<List<Gadget>>
     fun countAllGadgets(): Flow<Int>
+    fun isGadgetAdded(uid: String): Flow<Int>
     fun getOneGadget(): Flow<Gadget>
 }

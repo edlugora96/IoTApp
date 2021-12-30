@@ -7,13 +7,16 @@ import iothoth.edlugora.domain.Gadget
 import iothoth.edlugora.domain.UpdateUser
 import iothoth.edlugora.usecases.*
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.launch
 
-class InsertGadgetViewModel (
+class InsertGadgetViewModel(
     private val insertGadget: InsertGadget,
     private val updateGadget: UpdateGadget,
     private val updateUserInfo: UpdateUserInfo,
-) : ViewModel(){
+    private val isGadgetAdded: IsGadgetAdded
+) : ViewModel() {
 
     //region Utils declarations
     private val _loading = MutableLiveData<Boolean>(false)
@@ -30,15 +33,31 @@ class InsertGadgetViewModel (
     //endregion
 
 
-    suspend fun insertGadget(gadget: Gadget) : Job {
+    suspend fun insertGadget(gadget: Gadget): Job {
         return viewModelScope.launch {
-            _events.value = Event(
-                UiReactions.IdInsertedGadget(
-                    insertGadget.invoke(
-                        gadget
-                    )
-                )
-            )
+            val idAddedR: Long = 0
+            gadget.unitId?.let {
+                isGadgetAdded.invoke(it).collect { addId->
+                    val isNotAdded = addId == 0
+
+                    if (isNotAdded) {
+                        _events.value = Event(
+                            UiReactions.IdInsertedGadget(
+                                insertGadget.invoke(
+                                    gadget
+                                )
+                            )
+                        )
+                    } else {
+                        _events.value = Event(
+                            UiReactions.IdInsertedGadget(idAddedR)
+                        )
+                    }
+
+
+                }
+            }
+
         }
     }
 
@@ -58,6 +77,7 @@ class InsertGadgetViewModelFactory(
     private val insertGadget: InsertGadget,
     private val updateGadget: UpdateGadget,
     private val updateUserInfo: UpdateUserInfo,
+    private val isGadgetAdded: IsGadgetAdded
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(InsertGadgetViewModel::class.java)) {
@@ -65,7 +85,9 @@ class InsertGadgetViewModelFactory(
             return InsertGadgetViewModel(
                 insertGadget,
                 updateGadget,
-                updateUserInfo
+                updateUserInfo,
+                isGadgetAdded
+
             ) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")

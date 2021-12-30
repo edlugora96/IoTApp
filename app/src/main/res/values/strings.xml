@@ -1496,6 +1496,16 @@
     <string name="wifi_selected">SSID Wifi selecionado</string>
     <string name="continue_to_next">Continuar</string>
     <string name="wifi_password">Contraseña</string>
+    <string name="wifi_success">conexión exitosa</string>
     <string name="wifi_error_password">Error: no se pudo conectar a la red</string>
+    <string name="title_activity_detect_network">DetectNetworkActivity</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
 
 </resources>

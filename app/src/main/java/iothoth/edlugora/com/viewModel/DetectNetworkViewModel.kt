@@ -22,9 +22,11 @@ class DetectNetworkViewModel(
 
     sealed class UiReactions {
         data class ShowSuccessSnackBar(val message: String) : UiReactions()
-        data class ShowSuccessTestSnackBar(val message: String) : UiReactions()
+        data class ShowSuccessTest(val message: String, val wifi: String) : UiReactions()
         data class ShowErrorSnackBar(val message: String) : UiReactions()
+        data class ShowErrorTest(val message: String) : UiReactions()
         data class ShowWarningSnackBar(val message: String) : UiReactions()
+        data class ShowWarningTest(val message: String) : UiReactions()
     }
 
     fun gadget(id: Int): LiveData<Gadget> = getGadget.invoke(id).asLiveData()
@@ -41,10 +43,10 @@ class DetectNetworkViewModel(
 
             when (res.code.toInt()) {
                 in 200..299 -> _events.value =
-                    Event(UiReactions.ShowSuccessTestSnackBar(res.data.toString()))
+                    Event(UiReactions.ShowSuccessTest(res.data.toString(), res.wifi.toString()))
                 in 400..499 -> _events.value =
-                    Event(UiReactions.ShowWarningSnackBar(res.data.toString()))
-                else -> _events.value = Event(UiReactions.ShowErrorSnackBar(res.error.toString()))
+                    Event(UiReactions.ShowWarningTest(res.data.toString()))
+                else -> _events.value = Event(UiReactions.ShowErrorTest(res.error.toString()))
             }
         }
     }

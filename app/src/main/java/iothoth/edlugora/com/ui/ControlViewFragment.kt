@@ -167,8 +167,9 @@ class ControlViewFragment : Fragment() {
         /*gadgetObserver.observe(viewLifecycleOwner) {
             binding.gadgetName.text = it.name
         }*/
-        /*gadgetObserver.observe(viewLifecycleOwner, Observer{
-        })*/
+        gadgetObserver.observe(viewLifecycleOwner, Observer{
+            binding.navBar.gadgetName.text = it?.name
+        })
         /*binding.gadgetName.text = gadgetObserver.value?.name
         lifecycleScope.launch {
             Timer().schedule(500) {
@@ -182,8 +183,8 @@ class ControlViewFragment : Fragment() {
         /*binding.navBar.gadgetName.setOnClickListener { goToProfileView() }
         binding.navBar.profileName.setOnClickListener { goToProfileView() }
         binding.navBar.profilePhotoCard.setOnClickListener { goToProfileView() }*/
-        binding.cancel.setOnClickListener { goToListGadget() }
-        binding.cogMenu.setOnClickListener {
+        binding.navBar.cancel.setOnClickListener { goToListGadget() }
+        binding.navBar.cogMenu.setOnClickListener {
             it.isClickable = false
             val dialogGadgetProfile = BottomSheetDialog(requireContext())
 
@@ -249,13 +250,6 @@ class ControlViewFragment : Fragment() {
         gadgetObserver.value?.copy(id = gadgetObserver.value!!.id, name = name)
             ?: MutableLiveData<Gadget>().emptyGadget()
 
-    private fun goToProfileView() {
-        val action = ControlViewFragmentDirections.actionControlViewFragmentToProfileViewFragment(
-            gadgetId
-        )
-        findNavController().navigate(action)
-    }
-
     private fun goToListGadget() {
         val action = ControlViewFragmentDirections.actionControlViewFragmentToGadgetsListFragment()
         findNavController().navigate(action)
@@ -292,7 +286,7 @@ class ControlViewFragment : Fragment() {
                         getColor(requireContext(), R.color.warning)
                     )
                 }
-                else -> goToProfileView()
+                else -> {}
             }
 
         }
