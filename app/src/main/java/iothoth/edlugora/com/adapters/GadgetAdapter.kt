@@ -1,6 +1,7 @@
 package iothoth.edlugora.com.adapters
 
 import android.content.ClipData
+import android.content.res.Resources
 import android.provider.Settings.Global.getString
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -10,6 +11,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import iothoth.edlugora.com.R
 import iothoth.edlugora.com.databinding.ItemGadgetViewBinding
+import iothoth.edlugora.com.utils.getStringWithIdentifier
 import iothoth.edlugora.domain.Gadget
 
 class GadgetAdapter(private val onItemClicked: (Gadget) -> Unit) :
@@ -22,8 +24,8 @@ class GadgetAdapter(private val onItemClicked: (Gadget) -> Unit) :
 
         fun bind(gadget: Gadget) {
             binding.apply {
-                nameGadget.text = gadget.name
-                //iconGadget.text = gadget.icon
+                gadgetDisplayName = gadget.name
+                icon =  binding.root.context.getStringWithIdentifier(gadget.icon) //getString(R.string.accessible_icon)
 
             }
         }

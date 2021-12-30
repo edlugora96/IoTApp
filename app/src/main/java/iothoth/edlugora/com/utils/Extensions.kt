@@ -10,6 +10,7 @@ import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.net.Uri
 import android.net.wifi.ScanResult
+import android.net.wifi.WifiManager
 import android.os.Build
 import android.util.Log
 import android.view.View
@@ -101,7 +102,7 @@ fun Context.showConfirmDialog(message: String, title: String) {
     MaterialAlertDialogBuilder(this).setMessage(message)
         .setTitle(title)
         .setPositiveButton(resources.getString(R.string.accept)) { _, _ ->
-            {  }
+            { }
         }
         .show()
 }
@@ -117,7 +118,14 @@ fun Context.showConfirmDialog(message: String, accept: () -> Unit, decline: () -
         .show()
 }
 
-fun Context.showConfirmDialog(title: String, message: String, acceptName: String, declineName: String, accept: () -> Unit, decline: () -> Unit) {
+fun Context.showConfirmDialog(
+    title: String,
+    message: String,
+    acceptName: String,
+    declineName: String,
+    accept: () -> Unit,
+    decline: () -> Unit
+) {
     MaterialAlertDialogBuilder(this)
         .setTitle(title)
         .setMessage(message)
@@ -265,3 +273,21 @@ fun isWifiLocked(scanResult: ScanResult): Boolean {
     }
     return false
 }
+
+private fun Context.getStringIdentifier(name: String?): Int {
+    return try {
+        resources.getIdentifier(name, "string", this.packageName)
+    } catch (ev : Exception) {
+        R.string.app_name
+    }
+}
+
+fun Context.getStringWithIdentifier(name: String?): String {
+    return try {
+        resources.getString(this.getStringIdentifier(name))
+    } catch (ev : Exception) {
+        ""
+    }
+}
+
+fun WifiManager.actualSsid() = this.connectionInfo.ssid.replace("\"", "")

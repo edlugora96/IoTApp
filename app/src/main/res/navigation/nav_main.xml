@@ -25,6 +25,9 @@
         <action
             android:id="@+id/action_controlViewFragment_to_detectNetworkFragment"
             app:destination="@id/detectNetworkFragment" />
+        <action
+            android:id="@+id/action_controlViewFragment_to_insertGadgetFragment"
+            app:destination="@id/insertGadgetFragment" />
     </fragment>
     <fragment
         android:id="@+id/gadgetsListFragment"

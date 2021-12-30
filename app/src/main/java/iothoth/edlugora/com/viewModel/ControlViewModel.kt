@@ -47,7 +47,11 @@ class ControlViewModel(
     //endregion
 
     //region Get gadget and user information
-    fun gadget(id: Int): LiveData<Gadget> = getGadget.invoke(id).asLiveData()
+    fun gadget(id: Int): LiveData<Gadget> = try {
+        getGadget.invoke(id).asLiveData()
+    } catch (ex : NullPointerException ) {
+        MutableLiveData(MutableLiveData<Gadget>().emptyGadget())
+    }
 
     fun getUser(activity: Activity): LiveData<User> = MutableLiveData(getUserInfo.invoke(activity))
 

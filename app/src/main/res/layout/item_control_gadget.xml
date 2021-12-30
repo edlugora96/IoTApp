@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="actionDisplayName"
+            type="String" />
+
+        <variable
+            name="icon"
+            type="String" />
+    </data>
+
+    <LinearLayout
+        android:id="@+id/gadget_action_item"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="20dp"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/icon_gadget_action"
+            android:layout_width="match_parent"
+            android:layout_weight="1"
+            android:layout_height="0dp"
+            android:layout_gravity="center"
+            android:fontFamily="@font/fa"
+            android:gravity="center"
+            android:text="@{icon}"
+            android:layout_marginBottom="15dp"
+            android:textSize="80sp"
+            tools:text="@string/wifi" />
+
+        <TextView
+            android:id="@+id/gadget_action_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@{actionDisplayName}"
+            android:textSize="15sp"
+            tools:text="@string/accept" />
+    </LinearLayout>
+</layout>

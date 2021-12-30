@@ -7,12 +7,59 @@
     <data>
 
         <variable
+            name="gadgetDisplayName"
+            type="String" />
+
+        <variable
             name="icon"
             type="String" />
     </data>
 
+    <LinearLayout
+        android:id="@+id/gadget_item"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingStart="5dp"
+        android:paddingTop="25dp"
+        android:paddingEnd="5dp"
+        android:paddingBottom="25dp"
+        tools:layout_editor_absoluteX="1dp"
+        tools:layout_editor_absoluteY="1dp">
 
-    <com.google.android.material.card.MaterialCardView
+        <TextView
+            android:id="@+id/icon_gadget"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:fontFamily="@font/fa"
+            android:gravity="center_vertical"
+            android:text="@{icon}"
+            android:textSize="@dimen/large_text"
+            tools:text="@string/wifi" />
+
+        <TextView
+            android:id="@+id/gadget_name"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:text="@{gadgetDisplayName}"
+            android:textSize="15sp"
+            tools:text="@string/accept" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:fontFamily="@font/fa"
+            android:text="@string/chevron_right"
+            android:textSize="20sp" />
+    </LinearLayout>
+
+    <!--<com.google.android.material.card.MaterialCardView
         android:id="@+id/main_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -42,36 +89,6 @@
             app:layout_constraintTop_toBottomOf="@+id/textView2"
             tools:text="Porton" />
 
-    </com.google.android.material.card.MaterialCardView>
+    </com.google.android.material.card.MaterialCardView>-->
 
-</layout><!--
-<com.google.android.material.card.MaterialCardView
-
-    android:clickable="true"
-    android:focusable="true"
-    android:checkable="true">
-
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/fa"
-        android:textSize="50sp"
-        android:layout_marginBottom="25dp"
-        app:layout_constraintEnd_toEndOf="@+id/textView3"
-        app:layout_constraintStart_toStartOf="@+id/textView3"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="@string/water" />
-
-    <TextView
-        android:id="@+id/textView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView2"
-        tools:text="Porton" />
-
-</com.google.android.material.card.MaterialCardView>
-
--->
+</layout>

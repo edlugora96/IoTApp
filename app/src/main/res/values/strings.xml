@@ -1476,6 +1476,9 @@
     <string name="attention">Atención…</string>
     <string name="loading">Cargado…</string>
     <string name="online">Online</string>
+    <string name="ask_wifi_sync">Se requiere sincronizar el Wi-Fi</string>
+    <string name="offline">Offline</string>
+    <string name="sync_action">Sincronizar</string>
     <string name="decline">Cancelar</string>
     <string name="accept">Aceptar</string>
     <string name="delete_gadget_message">¿Deseas elminar %s?</string>
@@ -1491,6 +1494,7 @@
     <string name="close_gadget_dialog">Cerrar</string>
     <string name="wifi_dialog">Wi-Fi asignado:</string>
     <string name="sync_wifi">Sincronizar Wi-Fi</string>
+    <string name="unlock_gadget">Desbloquear dispositivo</string>
     <string name="update_gadget">Actualizar dispositivo</string>
     <string name="ask_for_turn_on_wifi">Para continuar es necesario encender el Wifi</string>
     <string name="wifi_selected">SSID Wifi selecionado</string>

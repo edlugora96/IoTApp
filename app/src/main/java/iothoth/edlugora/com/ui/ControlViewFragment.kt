@@ -1,7 +1,10 @@
 package iothoth.edlugora.com.ui
 
+import android.content.Context
 import android.net.*
+import android.net.wifi.WifiManager
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,11 +17,15 @@ import androidx.lifecycle.*
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.textfield.TextInputEditText
+import com.google.android.play.core.internal.bi
 import iothoth.edlugora.com.IoThothApplication
 import iothoth.edlugora.com.R
+import iothoth.edlugora.com.adapters.ControlGadgetAdapter
 import iothoth.edlugora.com.databinding.FragmentControlViewBinding
+import iothoth.edlugora.com.utils.actualSsid
 import iothoth.edlugora.com.utils.changeColorStatusBar
 import iothoth.edlugora.com.utils.showConfirmDialog
 import iothoth.edlugora.com.utils.showLongSnackBar
@@ -51,13 +58,16 @@ class ControlViewFragment : Fragment() {
     private var gadgetId: Int = 0
 
     /*private val _user: MutableLiveData<User> = MutableLiveData()
-    val user: LiveData<User> = _user
+    val user: LiveData<User> = _user*/
 
-    private val _gadget: MutableLiveData<Gadget> = MutableLiveData()
-    val gadget: LiveData<Gadget> = _gadget*/
+    private val _gadgetObservable: MutableLiveData<Gadget> = MutableLiveData()
+    //val gadgetObservable: LiveData<Gadget> = _gadgetObservable
 
-    private var gadgetObserver: LiveData<Gadget> = MutableLiveData()
+    //private var gadgetObserver: LiveData<Gadget> = MutableLiveData()
     private var _userObserver: LiveData<User> = MutableLiveData()
+
+
+    private lateinit var wifiManager: WifiManager
 
     //region ViewModel Declaration
     private val database: GadgetsRoomDatabase by lazy {
@@ -125,22 +135,66 @@ class ControlViewFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        wifiManager =
+            requireContext().applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
         viewModel.checkFirstStep(requireActivity())
         viewModel.events.observe(viewLifecycleOwner, Observer(this::validateEvents))
         gadgetId = navigationArg.gadgetId
 
         _userObserver = viewModel.getUser(requireActivity())
-        gadgetObserver = viewModel.gadget(gadgetId)
+        //gadgetObserver = viewModel.gadget(gadgetId)
+
+
+        viewModel.countOfAllGadgets.observe(viewLifecycleOwner, Observer(this::isOneGadget))
+
+        val adapter = ControlGadgetAdapter {
+            action(it.value, it.url)
+        }
+        binding.recycleControlGadget.adapter = adapter
+        binding.recycleControlGadget.layoutManager = GridLayoutManager(requireContext(), 2)
+        viewModel.gadget(gadgetId).observe(viewLifecycleOwner, Observer { gadget ->
+            gadget.let {
+                if (it != null) {
+                    binding.navBar.gadgetName.text = it.name
+                    _gadgetObservable.value = it
+                    adapter.submitList(it.actions)
+
+                    if (wifiManager.actualSsid() == it.wifiOwnership){
+                        binding.messageBarText.text = getString(R.string.online)
+                        binding.messageBarAction.visibility = View.GONE
+                        binding.messageBar.setBackgroundColor(getColor(requireContext(), R.color.blue))
+                    } else {
+                        binding.messageBarText.text = getString(R.string.offline)
+                        binding.messageBarAction.visibility = View.VISIBLE
+                        binding.messageBarAction.text = getString(R.string.ask_wifi_sync)
+                        binding.messageBar.setBackgroundColor(getColor(requireContext(), R.color.error))
+                        binding.messageBar.setOnClickListener { goToSyncWifiView() }
+                    }
+
+                }
+            }
+        })
         bind()
         //fillUserAndGadget()
     }
 
+    private fun isOneGadget(count: Int) {
+        if (count < 2) {
+            binding.navBar.cancel.text = getString(R.string.plus)
+            binding.navBar.cancel.setOnClickListener { goToInsertGadget() }
+
+        } else {
+            binding.navBar.cancel.setOnClickListener { goToListGadget() }
+        }
+    }
+
+
     //region Methods
 
-    fun action(act: Char) {
-        gadgetObserver.value.let {
+    fun action(act: String, url: String) {
+        _gadgetObservable.value.let {
             if (it != null) {
-                viewModel.gadgetDoAction(it.ipAddress, "/action", RequestApi(data = act.toString()))
+                viewModel.gadgetDoAction(it.ipAddress, url, RequestApi(data = act))
             }
         }
     }
@@ -167,9 +221,11 @@ class ControlViewFragment : Fragment() {
         /*gadgetObserver.observe(viewLifecycleOwner) {
             binding.gadgetName.text = it.name
         }*/
-        gadgetObserver.observe(viewLifecycleOwner, Observer{
-            binding.navBar.gadgetName.text = it?.name
-        })
+//        gadgetObserver.observe(viewLifecycleOwner, Observer{
+//            binding.navBar.gadgetName.text = it?.name
+//        })
+
+
         /*binding.gadgetName.text = gadgetObserver.value?.name
         lifecycleScope.launch {
             Timer().schedule(500) {
@@ -183,7 +239,7 @@ class ControlViewFragment : Fragment() {
         /*binding.navBar.gadgetName.setOnClickListener { goToProfileView() }
         binding.navBar.profileName.setOnClickListener { goToProfileView() }
         binding.navBar.profilePhotoCard.setOnClickListener { goToProfileView() }*/
-        binding.navBar.cancel.setOnClickListener { goToListGadget() }
+
         binding.navBar.cogMenu.setOnClickListener {
             it.isClickable = false
             val dialogGadgetProfile = BottomSheetDialog(requireContext())
@@ -201,8 +257,8 @@ class ControlViewFragment : Fragment() {
             val delete = dialogGadgetProfile.findViewById<LinearLayout>(R.id.delete_gadget)
             val syncWifi = dialogGadgetProfile.findViewById<LinearLayout>(R.id.wifi_gadget)
 
-            gadgetNameInput?.setText(gadgetObserver.value?.name ?: "")
-            wifi?.text = gadgetObserver.value?.wifiOwnership
+            gadgetNameInput?.setText(_gadgetObservable.value?.name ?: "")
+            wifi?.text = _gadgetObservable.value?.wifiOwnership
             save?.setOnClickListener {
                 lifecycleScope.launch {
                     viewModel.updateGadget(getInputsValueForGadget(gadgetNameInput?.text.toString()))
@@ -231,7 +287,7 @@ class ControlViewFragment : Fragment() {
                 requireContext().showConfirmDialog(
                     getString(
                         R.string.delete_gadget_message,
-                        gadgetObserver.value?.name.toString()
+                        _gadgetObservable.value?.name.toString()
                     ),
                     getString(R.string.attention),
                     ::acceptDeleteGadget
@@ -247,7 +303,7 @@ class ControlViewFragment : Fragment() {
 
 
     private fun getInputsValueForGadget(name: String): Gadget =
-        gadgetObserver.value?.copy(id = gadgetObserver.value!!.id, name = name)
+        _gadgetObservable.value?.copy(id = _gadgetObservable.value!!.id, name = name)
             ?: MutableLiveData<Gadget>().emptyGadget()
 
     private fun goToListGadget() {
@@ -259,6 +315,11 @@ class ControlViewFragment : Fragment() {
         val action = ControlViewFragmentDirections.actionControlViewFragmentToDetectNetworkFragment(
             gadgetId
         )
+        findNavController().navigate(action)
+    }
+
+    fun goToInsertGadget() {
+        val action = ControlViewFragmentDirections.actionControlViewFragmentToInsertGadgetFragment()
         findNavController().navigate(action)
     }
 

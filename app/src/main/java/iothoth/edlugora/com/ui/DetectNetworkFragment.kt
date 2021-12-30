@@ -315,7 +315,7 @@ class DetectNetworkFragment : Fragment() {
             }
         }
     }
-    private fun actualSsid() = wifiManager.connectionInfo.ssid.replace("\"", "")
+    private fun actualSsid() = wifiManager.actualSsid()
 
     @RequiresApi(Build.VERSION_CODES.Q)
     private fun scanResult(intent: Intent) {
