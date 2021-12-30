@@ -19,7 +19,7 @@ class GadgetApiDataSource(
             return ResponseApi(
                 data = res.data,
                 error = res.error,
-                code = res.code.toString(),
+                code = res.code,
                 wifi = res.wifi
             )
         } catch (ex: Exception) {
@@ -43,7 +43,7 @@ class GadgetApiDataSource(
             return ResponseApi(
                 data = res.data,
                 error = res.error,
-                code = res.code.toString(),
+                code = res.code,
                 wifi = null
             )
         } catch (ex: Exception) {
