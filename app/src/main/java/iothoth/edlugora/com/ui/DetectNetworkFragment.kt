@@ -1,14 +1,18 @@
 package iothoth.edlugora.com.ui
 
 import android.Manifest
+import android.app.AlertDialog
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.IntentFilter
+import android.location.LocationManager
 import android.net.ConnectivityManager
 import android.net.wifi.ScanResult
 import android.net.wifi.WifiManager
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -61,28 +65,15 @@ class DetectNetworkFragment : Fragment() {
     private lateinit var wifiHandler: WifiHandler
     private lateinit var wifiManager: WifiManager
 
-    @RequiresApi(Build.VERSION_CODES.R)
-    private val requestPermissions =
-        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { isGranted ->
-            val permissionsGranted = isGranted.all { it.value == true }
-            if (permissionsGranted) {
-                wifiHandler.startScanWifi()
-                if (_syncState.value == 0){
-                    startGadgetConnection()
-                }
-                if(_syncState.value == -2){
-                    _syncState.value = -1
-                }
-                //startGadgetConnection()
-            }
-        }
     private val wifiScan = MutableLiveData<List<ScanResult>>()
-    private var _gadgetObserver: LiveData<Gadget> = MutableLiveData()
+
+    //private var _gadgetObserver: LiveData<Gadget> = MutableLiveData()
+    private val _gadgetObservable: MutableLiveData<Gadget> = MutableLiveData()
     private val _gadget: MutableLiveData<Gadget> = MutableLiveData()
     val gadget: LiveData<Gadget> = _gadget
     private var ip = ""
     private var ssidGadget = ""
-    private var _syncState = MutableLiveData(-2)
+    private var _syncState = MutableLiveData(-1)
     var syncState: LiveData<Int> = _syncState
     private val navigationArg: DetectNetworkFragmentArgs by navArgs()
 
@@ -131,8 +122,6 @@ class DetectNetworkFragment : Fragment() {
             inflater,
             R.layout.fragment_detect_network, container, false
         )
-        _gadgetObserver = viewModel.gadget(navigationArg.gadgetId)
-
         /*permissionHandler = PermissionHandler(
             context = requireContext(),
             requestPermissions = this::requestPermissions,
@@ -175,7 +164,7 @@ class DetectNetworkFragment : Fragment() {
                             )
                         )
                         ssidGadget = networkSSID
-                        Timer().schedule(60000) {
+                        Timer().schedule(15000) {
                             viewModel.testConnection(ip, "/")
                         }
                     }
@@ -206,25 +195,36 @@ class DetectNetworkFragment : Fragment() {
             it.lifecycleOwner = viewLifecycleOwner
         }
 
-        ifPermissionsAreGranted()
 
         viewModel.events.observe(viewLifecycleOwner, Observer(this::validateEvents))
-        _syncState.observe(viewLifecycleOwner) { state -> kotlin.run {
-            binding.flag.text = state.toString()
-            when (state) {
-                -2 -> ifPermissionsAreGranted()
-                //-1 -> viewModel.testConnection(it.ipAddress, "/")
-                0 -> run {
-                    wifiScan.value = emptyList()
-                    startGadgetConnection()
-                }
-                1 -> wifiScan.value =
-                    wifiManager.scanResults //.filter { it.SSID != _gadgetObserver.value?.ssid ?: "" }
-                //else -> wifiScan.value = emptyList()
-            }
-        }
+        wifiHandler.startScanWifi()
+        viewModel.gadget(navigationArg.gadgetId)
+            .observe(viewLifecycleOwner, { gadget ->
+                _gadgetObservable.value = gadget
+                if (gadget != null) {
+                    _syncState.value = 0
+                    _syncState.observe(viewLifecycleOwner) { state ->
+                        run {
+                            if (wifiManager.actualSsid() != gadget.ssid && state != 0){
+                                _syncState.value = 0
+                            }
+                            when (state) {
+                                -1 -> viewModel.testConnection(ip, "/")
+                                0 -> startGadgetConnection()
+                                1 -> wifiScan.value =
+                                    wifiManager.scanResults.filter { it.SSID != gadget.ssid }
+                                //else ->
+                            }
+                        }
 
-        }
+                    }
+                } else {
+                    _syncState.value = -2
+                }
+
+            })
+
+
         /*_gadgetObserver.observe(viewLifecycleOwner) {
             if (it != null) {
                 _syncState.observe(viewLifecycleOwner) { state ->
@@ -255,12 +255,12 @@ class DetectNetworkFragment : Fragment() {
 
     @RequiresApi(Build.VERSION_CODES.Q)
     private fun startGadgetConnection() {
-        _gadgetObserver.value.let {
+        _gadgetObservable.value.let {
             if (it != null) {
                 wifiHandler.connectToANewWifiNetwork(it.ssid, it.ssidPassword) { link ->
                     run {
                         ip = "http:/${link.dnsServers[0]}"
-                        lifecycleScope.launch { _syncState.value = 1 }
+                        lifecycleScope.launch { _syncState.value = -1 }
                     }
                 }
             }
@@ -275,46 +275,35 @@ class DetectNetworkFragment : Fragment() {
     }
 
 
-    @RequiresApi(Build.VERSION_CODES.R)
-    fun ifPermissionsAreGranted() {
-        if (!hasPermissions(requireContext(), *PERMISSIONS)) {
-            requestPermissions.launch(PERMISSIONS)
-        } else {
-            wifiHandler.startScanWifi()
-            if (_syncState.value == 0){
-                startGadgetConnection()
+    private fun saveDeviceConfiguration(setIp: String? = null, setSsid: String? = null) {
+        //_gadgetObservable.observe(viewLifecycleOwner) {
+        //if (it != null) {
+        wifiHandler.stopScanWifi()
+        wifiHandler.disconnectToANewWifiNetwork()
+        lifecycleScope.launch {
+            _gadgetObservable.value?.let {
+                viewModel.updateGadget(
+                    it.copy(
+                        ipAddress = setIp ?: ip,
+                        wifiOwnership = setSsid ?: ssidGadget
+                    )
+                ).join()
             }
-            if (_syncState.value == -2){
-                _syncState.value = -1
-            }
+            requireActivity().showLongSnackBar(
+                R.id.root_activity,
+                getString(R.string.wifi_success),
+                ContextCompat.getColor(
+                    requireContext(),
+                    R.color.success
+                )
+            )
+
+            findNavController().navigateUp()
         }
+        //}
+        //}
     }
 
-    private fun saveDeviceConfiguration() {
-        _gadgetObserver.observe(viewLifecycleOwner) {
-            if (it != null) {
-                lifecycleScope.launch {
-                    viewModel.updateGadget(
-                        it.copy(
-                            ipAddress = ip,
-                            wifiOwnership = ssidGadget
-                        )
-                    ).join()
-                    requireActivity().showLongSnackBar(
-                        R.id.root_activity,
-                        getString(R.string.wifi_success),
-                        ContextCompat.getColor(
-                            requireContext(),
-                            R.color.success
-                        )
-                    )
-                    wifiHandler.stopScanWifi()
-                    wifiHandler.disconnectToANewWifiNetwork()
-                    findNavController().navigateUp()
-                }
-            }
-        }
-    }
     private fun actualSsid() = wifiManager.actualSsid()
 
     @RequiresApi(Build.VERSION_CODES.Q)
@@ -331,7 +320,30 @@ class DetectNetworkFragment : Fragment() {
         )) {
             WifiManager.WIFI_STATE_DISABLED, WifiManager.WIFI_STATE_DISABLING -> askForTurnOnWifi()
         }
+
+        if (_syncState.value == 1) {
+            wifiScan.value =
+                wifiManager.scanResults
+        }
     }
+
+    /*private fun buildAlertMessageNoGps() {
+        val builder: AlertDialog.Builder = Builder(this)
+        builder.setMessage("Your GPS seems to be disabled, do you want to enable it?")
+            .setCancelable(false)
+            .setPositiveButton("Yes",
+                DialogInterface.OnClickListener { dialog, id ->
+                    ContextCompat.startActivity(
+                        Intent(
+                            Settings.ACTION_LOCATION_SOURCE_SETTINGS
+                        )
+                    )
+                })
+            .setNegativeButton("No",
+                DialogInterface.OnClickListener { dialog, id -> dialog.cancel() })
+        val alert: AlertDialog = builder.create()
+        alert.show()
+    }*/
 
     private fun validateEvents(event: Event<UiReactions>?) {
         event?.getContentIfNotHandled().let { reaction ->
@@ -341,7 +353,7 @@ class DetectNetworkFragment : Fragment() {
                 is ShowSuccessTest -> reaction.run {
                     val res =
                         this.message.matches("\\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\\.|\$)){4}\\b".toRegex())
-                    if (syncState.value!! == -1) {
+                    if (syncState.value == -1) {
                         if (res && this.wifi != null) {
                             requireContext().showConfirmDialog(
                                 title = this.wifi,
@@ -349,17 +361,22 @@ class DetectNetworkFragment : Fragment() {
                                 acceptName = "Volver a configurar",
                                 declineName = "Mantener la configuracion",
                                 accept = fun() {
-                                    _syncState.value = 0
+                                    _syncState.value = 1
                                 },
-                                decline = this@DetectNetworkFragment::saveDeviceConfiguration
+                                decline = {
+                                    _syncState.value = -2
+                                    saveDeviceConfiguration(this.message, this.wifi)
+                                }
                             )
+                        } else {
+                            _syncState.value = 1
                         }
                     }
 
                     if (syncState.value!! > 1) {
                         if (res) {
                             _syncState.value = 3
-                            saveDeviceConfiguration()
+                            saveDeviceConfiguration(this.message, this.wifi)
 
                         } else {
                             _syncState.value = 1
@@ -375,12 +392,12 @@ class DetectNetworkFragment : Fragment() {
                 is ShowWarningTest -> reaction.run {
                     val res =
                         this.message.matches("\\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\\.|\$)){4}\\b".toRegex())
-                    if (!res && syncState.value!! == -1){
-                        _syncState.value = 0
+                    if (!res && syncState.value!! == -1) {
+                        _syncState.value = 1
                     }
                 }
                 is ShowErrorTest -> {
-                    _syncState.value = 0
+                    _syncState.value = 1
                 }
                 else -> {}
             }
@@ -389,16 +406,6 @@ class DetectNetworkFragment : Fragment() {
 
     }
 
-
-    companion object {
-        val PERMISSIONS = arrayOf(
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION,
-            Manifest.permission.CHANGE_WIFI_STATE,
-            Manifest.permission.ACCESS_WIFI_STATE,
-            Manifest.permission.CHANGE_NETWORK_STATE,
-        )
-    }
 
 }
 

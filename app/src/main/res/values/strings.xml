@@ -1477,6 +1477,9 @@
     <string name="loading">Cargado…</string>
     <string name="online">Online</string>
     <string name="ask_wifi_sync">Se requiere sincronizar el Wi-Fi</string>
+    <string name="ask_turn_on_location">Para poder interactuar con el dispositivo es necesario activar la localización</string>
+    <string name="ask_permission_wifi">Requiere otorgar permisos relacionados al Wi-Fi</string>
+    <string name="grant_permission">Permitir</string>
     <string name="offline">Offline</string>
     <string name="sync_action">Sincronizar</string>
     <string name="decline">Cancelar</string>
@@ -1496,6 +1499,8 @@
     <string name="sync_wifi">Sincronizar Wi-Fi</string>
     <string name="unlock_gadget">Desbloquear dispositivo</string>
     <string name="update_gadget">Actualizar dispositivo</string>
+    <string name="same_web">Conectado a la misma red</string>
+    <string name="another_web">Conectado a una red distinta</string>
     <string name="ask_for_turn_on_wifi">Para continuar es necesario encender el Wifi</string>
     <string name="wifi_selected">SSID Wifi selecionado</string>
     <string name="continue_to_next">Continuar</string>

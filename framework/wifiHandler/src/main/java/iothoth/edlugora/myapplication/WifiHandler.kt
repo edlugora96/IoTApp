@@ -11,6 +11,18 @@ import android.os.Build
 import android.os.IBinder
 import android.util.Log
 import androidx.annotation.RequiresApi
+import android.content.DialogInterface
+
+import androidx.core.content.ContextCompat.startActivity
+
+import android.location.LocationManager
+import android.provider.Settings
+import androidx.core.content.ContextCompat
+
+import androidx.core.content.ContextCompat.getSystemService
+
+
+
 
 class WifiHandler(
     private val context: Context,
@@ -23,6 +35,7 @@ class WifiHandler(
 
     private val wifiScanReceiver =
         object : BroadcastReceiver() {
+
             @RequiresApi(Build.VERSION_CODES.Q)
             override fun onReceive(context: Context, intent: Intent) {
                 scanSuccess(intent)
@@ -31,12 +44,13 @@ class WifiHandler(
 
     @RequiresApi(Build.VERSION_CODES.R)
     fun startScanWifi() {
-        intentFilter.apply {
-            addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION)
-            addAction(WifiManager.ACTION_WIFI_SCAN_AVAILABILITY_CHANGED)
-            addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION)
+        intentFilter.also {
+            it.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION)
+            it.addAction(WifiManager.ACTION_WIFI_SCAN_AVAILABILITY_CHANGED)
+            it.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION)
+            it.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION)
         }
-        //addAction(WifiManager.WIFI_STATE_CHANGED_ACTION)
+        //
         context.registerReceiver(wifiScanReceiver, intentFilter)
     }
 
@@ -82,6 +96,8 @@ class WifiHandler(
         connectivityManager.unregisterNetworkCallback(networkCallback)
     }
 
+
+
     /*val netWorkCallback = object : ConnectivityManager.NetworkCallback() {
         override fun onAvailable(network: Network) {
             Log.d("someNet", "The default network is now: $network")
@@ -112,3 +128,4 @@ class WifiHandler(
     }*/
 
 }
+

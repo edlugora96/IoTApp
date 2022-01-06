@@ -22,13 +22,6 @@
         android:layout_height="match_parent"
         tools:context=".ui.DetectNetworkFragment">
 
-        <TextView
-            android:id="@+id/flag"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/nav_bar"
-            tools:text="Oye mi amor" />
-
         <include
             android:id="@+id/nav_bar"
             layout="@layout/navbar_full_screen"
@@ -44,6 +37,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/nav_bar">
 
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recycle_wifi_scanner"
                 android:layout_width="match_parent"
@@ -55,6 +49,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/nav_bar"
                 tools:listitem="@layout/item_wifi_scanner" />
+
         </ScrollView>
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -118,9 +113,9 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:visibility="@{codeBehind.syncState > 1 ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/nav_bar"
-            android:visibility="@{codeBehind.syncState > 1 ? View.VISIBLE : View.GONE}">
+            app:layout_constraintTop_toBottomOf="@+id/nav_bar">
 
             <TextView
                 android:id="@+id/textView8"

@@ -3,6 +3,7 @@ package iothoth.edlugora.com.utils
 import android.app.Activity
 import android.content.ContentResolver
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.Bitmap
@@ -12,6 +13,7 @@ import android.net.Uri
 import android.net.wifi.ScanResult
 import android.net.wifi.WifiManager
 import android.os.Build
+import android.provider.Settings
 import android.util.Log
 import android.view.View
 import android.view.WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
@@ -25,10 +27,15 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.exifinterface.media.ExifInterface
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.asLiveData
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import iothoth.edlugora.com.R
 import iothoth.edlugora.com.ui.DetectNetworkFragment
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import java.io.IOException
 import java.io.InputStream
 
@@ -291,3 +298,24 @@ fun Context.getStringWithIdentifier(name: String?): String {
 }
 
 fun WifiManager.actualSsid() = this.connectionInfo.ssid.replace("\"", "")
+
+fun WifiManager.actualSsidLiveData(): LiveData<String> {
+    val ssidFlow : Flow<String> = flow{
+        while (true){
+            emit(this@actualSsidLiveData.connectionInfo.ssid.replace("\"", ""))
+            delay(1000)
+        }
+    }
+    return ssidFlow.asLiveData()
+}
+
+fun gpsEnable(activity: Activity, context: Context) {
+    context.showConfirmDialog(context.resources.getString(R.string.ask_turn_on_location), accept = {
+        activity.startActivity(
+            Intent(
+                Settings.ACTION_LOCATION_SOURCE_SETTINGS
+            )
+        )
+    },
+        decline = {})
+}
