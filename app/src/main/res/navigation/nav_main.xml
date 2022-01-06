@@ -28,6 +28,9 @@
         <action
             android:id="@+id/action_controlViewFragment_to_insertGadgetFragment"
             app:destination="@id/insertGadgetFragment" />
+        <action
+            android:id="@+id/action_controlViewFragment_to_firstStepFragment"
+            app:destination="@id/firstStepFragment" />
     </fragment>
     <fragment
         android:id="@+id/gadgetsListFragment"

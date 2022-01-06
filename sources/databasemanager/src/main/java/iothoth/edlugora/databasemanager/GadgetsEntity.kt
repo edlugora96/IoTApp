@@ -1,6 +1,7 @@
 package iothoth.edlugora.databasemanager
 
 import androidx.room.ColumnInfo
+import androidx.room.Delete
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import iothoth.edlugora.domain.Action
@@ -28,5 +29,6 @@ data class GadgetsEntity(
     @ColumnInfo(name = "setup_info")
     val setupInfo: String?,
     val type: String?,
-    val status: String?
+    val status: String?,
+    val showing: Int? = 1
 )

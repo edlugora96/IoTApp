@@ -1,7 +1,5 @@
 package iothoth.edlugora.domain
 
-import androidx.lifecycle.MutableLiveData
-
 fun User.toUpdateUser() = UpdateUser(
     name, icon, firstStep, startScreen, pinedGadget, pinedLocation, lastGadgetAdded
 )
@@ -17,7 +15,7 @@ fun UpdateUser.toUser() = User(
 )
 
 
-fun <T> MutableLiveData<T>.emptyGadget(): Gadget {
+fun emptyGadget(): Gadget {
     return Gadget(
         id = 0,
         unitId = null,
@@ -33,6 +31,7 @@ fun <T> MutableLiveData<T>.emptyGadget(): Gadget {
         type = "",
         actions = emptyList(),
         values = emptyList(),
-        status = ""
+        status = "",
+        showing = 1
     )
 }

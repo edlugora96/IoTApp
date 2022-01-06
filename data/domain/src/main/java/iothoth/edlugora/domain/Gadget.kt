@@ -15,7 +15,8 @@ data class Gadget(
     val coordinates: String?,
     val setupInfo: String?,
     val type: String?,
-    val status: String?
+    val status: String?,
+    val showing: Int?
 )
 
 data class Value(

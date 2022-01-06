@@ -17,15 +17,15 @@ interface GadgetsDao {
     @Query("SELECT * FROM gadgets WHERE id = :id")
     fun getGadget(id: Int): Flow<GadgetsEntity>
 
-    @Query("SELECT * FROM gadgets")
+    @Query("SELECT * FROM gadgets WHERE showing != 0")
     fun getAllGadgets(): Flow<List<GadgetsEntity>>
 
-    @Query("SELECT count(*) FROM gadgets")
+    @Query("SELECT count(*) FROM gadgets WHERE showing != 0")
     fun countAllGadgets(): Flow<Int>
 
-    @Query("SELECT count(*) FROM gadgets WHERE u_id = :uid")
+    @Query("SELECT count(*) FROM gadgets WHERE u_id = :uid AND showing != 0")
     fun isGadgetAdded(uid:String): Flow<Int>
 
-    @Query("SELECT * FROM gadgets LIMIT 1")
+    @Query("SELECT * FROM gadgets WHERE showing != 0 LIMIT 1")
     fun getOneGadget(): Flow<GadgetsEntity>
 }

@@ -15,7 +15,6 @@ import kotlinx.coroutines.launch
 
 class GadgetsListViewModel(
     private val setUserInfo: SetUserInfo,
-    private val insertGadget: InsertGadget,
     private val updateGadget: UpdateGadget,
     private val updateUserInfo: UpdateUserInfo,
     private val getUserInfo: GetUserInfo,

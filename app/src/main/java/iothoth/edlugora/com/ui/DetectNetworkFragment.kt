@@ -285,7 +285,8 @@ class DetectNetworkFragment : Fragment() {
                 viewModel.updateGadget(
                     it.copy(
                         ipAddress = setIp ?: ip,
-                        wifiOwnership = setSsid ?: ssidGadget
+                        wifiOwnership = setSsid ?: ssidGadget,
+                        status = "2"
                     )
                 ).join()
             }

@@ -1,16 +1,12 @@
 package iothoth.edlugora.databasemanager
 
-import android.util.Log
-import androidx.lifecycle.MutableLiveData
 import iothoth.edlugora.domain.Gadget
 import iothoth.edlugora.domain.emptyGadget
-import java.lang.Exception
-import java.lang.NullPointerException
 
 fun List<GadgetsEntity>.toGadgetDomainList() = map(GadgetsEntity::toGadgetDomain)
 
 
-fun GadgetsEntity.toGadgetDomain() = MutableLiveData<Gadget>().emptyGadget().copy(
+fun GadgetsEntity.toGadgetDomain() = emptyGadget().copy(
     id = id,
     unitId = unitId,
     name = name,
@@ -26,6 +22,7 @@ fun GadgetsEntity.toGadgetDomain() = MutableLiveData<Gadget>().emptyGadget().cop
     setupInfo = setupInfo,
     type = type,
     status = status,
+    showing = showing
 )
 
 fun Gadget.toGadgetEntity() = GadgetsEntity(
@@ -44,5 +41,6 @@ fun Gadget.toGadgetEntity() = GadgetsEntity(
     setupInfo = setupInfo,
     type = type,
     status = status,
+    showing = showing
 )
 

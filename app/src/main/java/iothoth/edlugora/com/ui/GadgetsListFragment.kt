@@ -63,9 +63,6 @@ class GadgetsListFragment : Fragment() {
     private val getUserInfo = GetUserInfo(userInfoRepository)
     private val setUserInfo = SetUserInfo(userInfoRepository)
 
-    private val insertGadget by lazy {
-        InsertGadget(gadgetRepository)
-    }
     private val updateGadget by lazy {
         UpdateGadget(gadgetRepository)
     }
@@ -88,7 +85,6 @@ class GadgetsListFragment : Fragment() {
     private val viewModel: GadgetsListViewModel by lazy {
         GadgetsListViewModel(
             setUserInfo,
-            insertGadget,
             updateGadget,
             updateUserInfo,
             getUserInfo,

@@ -46,6 +46,7 @@ import iothoth.edlugora.domain.BarcodeScannerConstants.SECRET
 import iothoth.edlugora.domain.BarcodeScannerConstants.SUCCESS_QR
 import iothoth.edlugora.domain.Gadget
 import iothoth.edlugora.domain.UpdateUser
+import iothoth.edlugora.domain.emptyGadget
 import iothoth.edlugora.domain.repository.LocalGadgetDataSource
 import iothoth.edlugora.networkmanager.GadgetApiDataSource
 import iothoth.edlugora.networkmanager.GadgetRequest
@@ -246,11 +247,11 @@ class InsertGadgetFragment : Fragment() {
         isEnableBackPress = itIs
     }
 
-    private fun goToAllGadget() {
+    private fun goToGadgetList() {
         val action = InsertGadgetFragmentDirections.actionInsertGadgetFragmentToGadgetsListFragment()
         findNavController().navigate(action)
     }
-
+    var flag = true
     @RequiresApi(Build.VERSION_CODES.O)
     private fun onEvent(event: String, result: String? = null) {
         when (event) {
@@ -259,12 +260,29 @@ class InsertGadgetFragment : Fragment() {
                 barcodeScanner.pause()
                 try {
                     val resultDecrypted = decrypt(result, SECRET)!!
-                    val gadgetData = gadgetJsonAdapter.fromJson(resultDecrypted)
+                    val gadgetData = gadgetJsonAdapter.fromJson(resultDecrypted)!!
                     clickableIcons(false)
                     lifecycleScope.launch {
-                        viewModel.insertGadget(gadgetData!!)
-                        goToAllGadget()
-                        //findNavController().popBackStack()
+                        if(flag){
+                            flag = false
+                            viewModel.insertGadget(emptyGadget().copy(
+                                unitId = gadgetData.unitId,
+                                name = gadgetData.name,
+                                icon = gadgetData.icon,
+                                ipAddress = gadgetData.ipAddress,
+                                ssid = gadgetData.ssid,
+                                ssidPassword = gadgetData.ssidPassword,
+                                wifiOwnership = gadgetData.wifiOwnership,
+                                location = gadgetData.location,
+                                coordinates = gadgetData.coordinates,
+                                setupInfo = gadgetData.setupInfo,
+                                type = gadgetData.type,
+                                actions = gadgetData.actions,
+                                values = gadgetData.values,
+                                status = gadgetData.status
+                            ))
+                            goToGadgetList()
+                        }
                     }
                 } catch (ex: Exception) {
                     requireContext().showLongToast(R.string.error_qr_message)

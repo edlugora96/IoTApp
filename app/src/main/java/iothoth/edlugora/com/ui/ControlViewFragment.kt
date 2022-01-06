@@ -7,6 +7,7 @@ import android.net.*
 import android.net.wifi.WifiManager
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -180,8 +181,80 @@ class ControlViewFragment : Fragment() {
             }
         })
 
-        wifiManager.actualSsidLiveData().observe(viewLifecycleOwner, Observer { ssidOb ->
+        binding.messageBarText.text = getString(R.string.loading)
+        binding.messageBarAction.visibility = View.GONE
+        binding.messageBar.setBackgroundColor(
+            getColor(
+                requireContext(),
+                R.color.blue
+            )
+        )
+        var flag = true
+        _gadgetObservable.observe(viewLifecycleOwner, Observer {
+            if (it != null) {
+                if (it.status == "1") {
+                    binding.messageBarText.text = getString(R.string.another_web)
+                    binding.messageBarAction.visibility = View.VISIBLE
+                    binding.messageBarAction.text = getString(R.string.sync_wifi)
+                    binding.messageBar.setBackgroundColor(
+                        getColor(
+                            requireContext(),
+                            R.color.error
+                        )
+                    )
+                    binding.messageBar.setOnClickListener {
+                        goToSyncWifiView()
+                    }
+                }
+                if (flag) {
+                    flag = false
+                    viewModel.startConnection("http://${it.ipAddress}", "/")
+                        .observe(viewLifecycleOwner, Observer { response ->
+                            if (it.status != "1") {
+                                when (response.code.toInt()) {
+                                    in 200..299 -> {
+                                        binding.messageBarText.text = getString(R.string.online)
+                                        binding.messageBarAction.visibility = View.GONE
+                                        binding.messageBar.setBackgroundColor(
+                                            getColor(
+                                                requireContext(),
+                                                R.color.blue
+                                            )
+                                        )
+                                    }
+                                    else -> {
+                                        binding.messageBarText.text = getString(R.string.offline)
+                                        binding.messageBarAction.visibility = View.GONE
+                                        binding.messageBar.setBackgroundColor(
+                                            getColor(
+                                                requireContext(),
+                                                R.color.warning
+                                            )
+                                        )
+                                    }
+                                }
+                            }
+                        })
+                }
+            }
+        })
+        /*wifiManager.actualSsidLiveData().observe(viewLifecycleOwner, Observer { ssidOb ->
             run {
+                if (_gadgetObservable.value?.status == "1") {
+                    binding.messageBarText.text = getString(R.string.another_web)
+                    binding.messageBarAction.visibility = View.VISIBLE
+                    binding.messageBarAction.text = getString(R.string.sync_wifi)
+                    binding.messageBar.setBackgroundColor(
+                        getColor(
+                            requireContext(),
+                            R.color.error
+                        )
+                    )
+                    binding.messageBar.setOnClickListener {
+                        goToSyncWifiView()
+                    }
+                }
+
                 val wifiOwnership = _gadgetObservable.value?.wifiOwnership ?: String()
                 if (ssidOb == wifiOwnership) {
                     binding.messageBarText.text = getString(R.string.same_web)
@@ -193,20 +266,10 @@ class ControlViewFragment : Fragment() {
                         )
                     )
                 } else {
-                    binding.messageBarText.text = getString(R.string.another_web)
-                    binding.messageBarAction.visibility = View.VISIBLE
-                    binding.messageBarAction.text = getString(R.string.sync_wifi)
-                    binding.messageBar.setBackgroundColor(
-                        getColor(
-                            requireContext(),
-                            R.color.error
-                        )
-                    )
-                    binding.messageBar.setOnClickListener { goToSyncWifiView() }
                 }
             }
 
-        })
+        })*/
         bind()
         //fillUserAndGadget()
     }
@@ -413,6 +476,8 @@ class ControlViewFragment : Fragment() {
                         getColor(requireContext(), R.color.warning)
                     )
                 }
+
+
                 else -> {}
             }
 

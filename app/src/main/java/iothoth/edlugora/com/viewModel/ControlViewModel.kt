@@ -1,22 +1,17 @@
 package iothoth.edlugora.com.viewModel
 
 import android.app.Activity
-import android.util.Log
 import androidx.lifecycle.*
 import iothoth.edlugora.com.viewModel.utils.Event
-import iothoth.edlugora.com.viewModel.ControlViewModel.UiReactions
 import iothoth.edlugora.com.viewModel.ControlViewModel.UiReactions.*
-import iothoth.edlugora.domain.Gadget
-import iothoth.edlugora.domain.RequestApi
-import iothoth.edlugora.domain.User
-import iothoth.edlugora.domain.emptyGadget
+import iothoth.edlugora.domain.*
 import iothoth.edlugora.usecases.*
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
-import java.lang.Exception
 import java.util.*
-import java.util.concurrent.ScheduledFuture
 import kotlin.concurrent.schedule
 
 class ControlViewModel(
@@ -41,16 +36,17 @@ class ControlViewModel(
         data class ShowSuccessSnackBar(val message: String) : UiReactions()
         data class ShowErrorSnackBar(val message: String) : UiReactions()
         data class ShowWarningSnackBar(val message: String) : UiReactions()
-        data class GetUserR(val data: User) : UiReactions()
-        data class GetGadgetR(val data: Gadget) : UiReactions()
+        data class ShowSuccessConnection(val message: String) : UiReactions()
+        data class ShowErrorConnection(val message: String) : UiReactions()
+        data class ShowWarningConnection(val message: String) : UiReactions()
     }
     //endregion
 
     //region Get gadget and user information
     fun gadget(id: Int): LiveData<Gadget> = try {
         getGadget.invoke(id).asLiveData()
-    } catch (ex : NullPointerException ) {
-        MutableLiveData(MutableLiveData<Gadget>().emptyGadget())
+    } catch (ex: NullPointerException) {
+        MutableLiveData(emptyGadget())
     }
 
     fun getUser(activity: Activity): LiveData<User> = MutableLiveData(getUserInfo.invoke(activity))
@@ -64,9 +60,30 @@ class ControlViewModel(
     //region Control handler
     val countOfAllGadgets = countAllGadgets.invoke().asLiveData()
 
-    suspend fun testConnection(baseUrl: String, url: String) {
-        testGadgetConnection.invoke(baseUrl, url)
+    private suspend fun testConnection(baseUrl: String, url: String) {
+        viewModelScope.launch {
 
+            val res = testGadgetConnection.invoke(baseUrl, url)
+
+
+            when (res.code.toInt()) {
+                in 200..299 -> _events.value = Event(ShowSuccessConnection(res.data.toString()))
+                in 400..499 -> _events.value = Event(ShowErrorConnection(res.data.toString()))
+                else -> _events.value = Event(ShowWarningConnection(res.error.toString()))
+            }
+
+        }.join()
+
+    }
+
+    fun startConnection(baseUrl: String, url: String) : LiveData<ResponseApi> {
+        return flow {
+            while (true) {
+                val res = testGadgetConnection.invoke(baseUrl, url)
+                emit(res)
+                delay(5000)
+            }
+        }.asLiveData()
     }
 
     suspend fun updateGadget(gadget: Gadget): Job {
